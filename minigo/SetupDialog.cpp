@@ -1,4 +1,5 @@
 #include "SetupDialog.h"
+#include "Piece.h"
 
 Dialog::Dialog()
 	: QDialog()
@@ -7,14 +8,20 @@ Dialog::Dialog()
 	//QObject::connect(this, SIGNAL(
 }
 
-Dialog::~Dialog(){}
+Dialog::~Dialog(){
+
+	delete initialState;
+}
 
 void Dialog::on_okButton_clicked(){
 
 	goFirst = ui.goFirstBox->isChecked();
 	dimensions = ui.dimensionsBox->value();
 	min = ui.minMaxBox->currentIndex();
+	plies = ui.plyBox->value();
+
 	this->close();
-	//initialState(
+	initialState = new State(dimensions);
+	initialState->generateSubsequentStates(Piece::BLACK, plies);
 	w.show();
 }

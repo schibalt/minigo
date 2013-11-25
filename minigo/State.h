@@ -14,15 +14,18 @@
 #include "State.h"
 
 class State {
+
 public:
-	State(int);
-	State(Board);
+	State(int dimensions);
+	State(Board preconstructedBoard);
 	virtual ~State();
 	void printState();
 	Board board;
+	int heuristic;
+	int generateSubsequentStates(int color, int level);
+
 private:
 	vector<State> subsequentStates;
-	int generateSubsequentStates(int, int);
 	Player min;
 	Player max;
 };

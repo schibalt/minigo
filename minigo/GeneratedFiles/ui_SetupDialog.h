@@ -39,6 +39,8 @@ public:
     QComboBox *minMaxBox;
     QLabel *label_2;
     QCheckBox *goFirstBox;
+    QSpinBox *plyBox;
+    QLabel *label_3;
 
     void setupUi(QDialog *Dialog)
     {
@@ -68,21 +70,29 @@ public:
 
         dimensionsBox = new QSpinBox(Dialog);
         dimensionsBox->setObjectName(QStringLiteral("dimensionsBox"));
-        dimensionsBox->setGeometry(QRect(170, 20, 42, 22));
+        dimensionsBox->setGeometry(QRect(100, 10, 42, 22));
         dimensionsBox->setMinimum(3);
         dimensionsBox->setValue(19);
         label = new QLabel(Dialog);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(100, 20, 61, 16));
+        label->setGeometry(QRect(30, 10, 61, 16));
         minMaxBox = new QComboBox(Dialog);
         minMaxBox->setObjectName(QStringLiteral("minMaxBox"));
-        minMaxBox->setGeometry(QRect(170, 50, 69, 22));
+        minMaxBox->setGeometry(QRect(290, 50, 69, 22));
         label_2 = new QLabel(Dialog);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(100, 50, 61, 16));
+        label_2->setGeometry(QRect(220, 50, 61, 16));
         goFirstBox = new QCheckBox(Dialog);
         goFirstBox->setObjectName(QStringLiteral("goFirstBox"));
         goFirstBox->setGeometry(QRect(300, 20, 70, 17));
+        plyBox = new QSpinBox(Dialog);
+        plyBox->setObjectName(QStringLiteral("plyBox"));
+        plyBox->setGeometry(QRect(100, 50, 42, 22));
+        plyBox->setMinimum(1);
+        plyBox->setValue(1);
+        label_3 = new QLabel(Dialog);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(30, 50, 61, 16));
 
         retranslateUi(Dialog);
 
@@ -102,6 +112,7 @@ public:
         );
         label_2->setText(QApplication::translate("Dialog", "Min/max", 0));
         goFirstBox->setText(QApplication::translate("Dialog", "Go First", 0));
+        label_3->setText(QApplication::translate("Dialog", "Plies", 0));
     } // retranslateUi
 
 };

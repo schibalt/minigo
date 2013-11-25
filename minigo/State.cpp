@@ -13,16 +13,20 @@
 
 State::State(int dimensions) {
 
-	board = Board(dimensions);
+	Board * newBoard = new Board(dimensions);
+	board = *newBoard;
+	heuristic = INT_MIN;
 }
 
 State::State(Board preconstructedBoard) {
 
 	board = preconstructedBoard;
+	heuristic = INT_MIN;
 }
 
 State::~State() {
 
+	//delete board;
 }
 
 void State::printState() {
@@ -33,6 +37,7 @@ void State::printState() {
 
 	for (int x = 0; x < dimensions; x++)
 		wprintf(L"%02i ", x);
+
 	wprintf(L"\n");
 	wprintf(L"---+");
 	for (int x = 0; x < dimensions; x++)
@@ -64,21 +69,31 @@ void State::printState() {
 */
 int State::generateSubsequentStates(int color, int level) {
 
-	int dimensions = board.getDimensions();
-	int subStatesGenerated = 0;
+	if(level > 0){
 
-	for (int y = 0; y < dimensions; y++) {
+		int dimensions = board.getDimensions();
+		int subStatesGenerated = 0;
 
-		for (int x = 0; x < dimensions; x++){
+		for (int y = 0; y < dimensions; y++) {
 
-			if (board.getSpace(x, y).isEmpty() /*&& board.legalMove(color, i, j)*/) {
+			for (int x = 0; x < dimensions; x++){
 
-				Board newBoard = board.clone();
-				Piece newPiece(color, x, y);
-				newBoard.addPiece(newPiece);
-				subsequentStates.push_back(State(newBoard));
+				if (board.getSpace(x, y).isEmpty() /*&& board.legalMove(color, i, j)*/) {
+
+					Board newBoard = *(board.clone());
+					Piece newPiece(color, x, y);
+					newBoard.addPiece(newPiece);
+
+					State subsequentState(newBoard) ;//= new State(newBoard);
+					subStatesGenerated = subsequentState.generateSubsequentStates((color + 1) % 2, level - 1) + 1;
+					subsequentStates.push_back(subsequentState);
+					
+					//delete newBoard;
+					//delete subsequentState;
+				}
 			}
 		}
+		return subStatesGenerated;
 	}
 	return 0;
 }

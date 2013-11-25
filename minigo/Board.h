@@ -15,19 +15,21 @@
 using std::vector;
 
 class Board {
+
 public:
 	Board();
 	Board(int dimensions);
 	virtual ~Board();
 	Space getSpace(int, int);
 	int getDimensions();
-	Board clone();
+	Board* clone();
 	void addPiece(Piece);
+
 private:
 	Space** spaces;
 	void initSpaces();
 	int dimensions;
-	vector<Piece> pieces;
+	vector<Piece>* pieces;
 };
 
 #endif /* BOARD_H_ */

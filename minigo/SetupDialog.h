@@ -13,9 +13,11 @@ class Dialog : public QDialog
 public:
 	Dialog();
 	~Dialog();
+
 	bool goFirst;
 	int dimensions;
 	bool min;
+	int plies;
 
 private:
 	Ui::Dialog ui;
