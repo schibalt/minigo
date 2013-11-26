@@ -17,15 +17,16 @@ class State {
 
 public:
 	State(int dimensions);
-	State(Board preconstructedBoard);
+	State(Board* preconstructedBoard);
 	virtual ~State();
 	void printState();
-	Board board;
+	Board* board;
 	int heuristic;
 	int generateSubsequentStates(int color, int level);
 
 private:
-	vector<State> subsequentStates;
+	void initialize(Board* board);
+	vector<State*> subsequentStates;
 	Player min;
 	Player max;
 };

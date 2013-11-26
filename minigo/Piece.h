@@ -16,7 +16,7 @@ public:
 	int getColor();
 	static const int BLACK = 0;
 	static const int WHITE = 1;
-	Piece clone();
+	Piece* clone();
 
 	class Point {
 
@@ -30,6 +30,7 @@ public:
 			y = -1;
 		}
 		Point(int x, int y) {
+
 			this->x = x;
 			this->y = y;
 		}

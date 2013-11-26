@@ -13,27 +13,34 @@
 
 State::State(int dimensions) {
 
-	Board * newBoard = new Board(dimensions);
-	board = *newBoard;
-	heuristic = INT_MIN;
+	Board* board = new Board(dimensions);
+	initialize(board);
 }
 
-State::State(Board preconstructedBoard) {
+State::State(Board* preconstructedBoard) {
 
-	board = preconstructedBoard;
+	initialize(preconstructedBoard);
+}
+
+void State::initialize(Board* board){
+
+	this->board = board;
 	heuristic = INT_MIN;
 }
 
 State::~State() {
 
-	//delete board;
+	delete board;
+	
+	for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
+		delete *(it);
 }
 
 void State::printState() {
 	wprintf(L"\n");
 	wprintf(L"   | ");
 
-	int dimensions = board.getDimensions();
+	int dimensions = board->getDimensions();
 
 	for (int x = 0; x < dimensions; x++)
 		wprintf(L"%02i ", x);
@@ -46,7 +53,7 @@ void State::printState() {
 	for (int x = 0; x < dimensions; x++) {
 		wprintf(L"%02i |", x);
 		for (int y = 0; y < dimensions; y++) {
-			Space space = board.getSpace(x, y);
+			Space space = board->getSpace(x, y);
 
 			if (space.getPiece().getColor() == Piece::BLACK)
 				wprintf(L"-B-");
@@ -71,21 +78,21 @@ int State::generateSubsequentStates(int color, int level) {
 
 	if(level > 0){
 
-		int dimensions = board.getDimensions();
+		int dimensions = board->getDimensions();
 		int subStatesGenerated = 0;
 
 		for (int y = 0; y < dimensions; y++) {
 
 			for (int x = 0; x < dimensions; x++){
 
-				if (board.getSpace(x, y).isEmpty() /*&& board.legalMove(color, i, j)*/) {
+				if (board->getSpace(x, y).isEmpty() /*&& board.legalMove(color, i, j)*/) {
 
-					Board newBoard = *(board.clone());
-					Piece newPiece(color, x, y);
-					newBoard.addPiece(newPiece);
+					Board* newBoard = board->clone();
+					Piece* newPiece = new Piece(color, x, y);
+					newBoard->addPiece(newPiece);
 
-					State subsequentState(newBoard) ;//= new State(newBoard);
-					subStatesGenerated = subsequentState.generateSubsequentStates((color + 1) % 2, level - 1) + 1;
+					State* subsequentState = new State(newBoard);
+					subStatesGenerated = subsequentState->generateSubsequentStates((color + 1) % 2, level - 1) + 1;
 					subsequentStates.push_back(subsequentState);
 					
 					//delete newBoard;

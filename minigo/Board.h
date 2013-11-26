@@ -23,13 +23,13 @@ public:
 	Space getSpace(int, int);
 	int getDimensions();
 	Board* clone();
-	void addPiece(Piece);
+	void addPiece(Piece*);
 
 private:
 	Space** spaces;
-	void initSpaces();
+	void initialize(int dimensions);
 	int dimensions;
-	vector<Piece>* pieces;
+	vector<Piece*> pieces;
 };
 
 #endif /* BOARD_H_ */

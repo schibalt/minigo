@@ -9,20 +9,16 @@
 #include "Space.h"
 #include <omp.h>
 
-#define DEFAULTDIMENSION 19
+#define DEFAULTDIMENSIONS 19
 
 Board::Board() {
 
-	pieces = new vector<Piece>();
-	this->dimensions = DEFAULTDIMENSION;
-	initSpaces();
+	initialize(DEFAULTDIMENSIONS);
 }
 
 Board::Board(int dimensions) {
-	
-	pieces = new vector<Piece>();
-	this->dimensions = dimensions;
-	initSpaces();
+
+	initialize(dimensions);
 }
 
 Board::~Board() {
@@ -31,7 +27,10 @@ Board::~Board() {
 		delete spaces[space];
 
 	delete spaces;
-	delete pieces;
+
+	for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+		delete *(it);
+	//delete pieces;
 }
 
 Board* Board::clone() {
@@ -39,14 +38,16 @@ Board* Board::clone() {
 	Board* boardClone = new Board(dimensions);
 
 	//#pragma omp parallel for
-	for (vector<Piece>::iterator it = pieces->begin(); it != pieces->end(); ++it)
-		boardClone->addPiece((*it).clone());
+	for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+		boardClone->addPiece((*it)->clone());
 
 	return boardClone;
 }
 
-void Board::initSpaces() {
-
+void Board::initialize(int dimensions) {
+	
+	//pieces = new vector<Piece>();
+	this->dimensions = dimensions;
 	spaces = new Space*[dimensions];
 
 	for (int space = 0; space < dimensions; space++)
@@ -63,10 +64,10 @@ Space Board::getSpace(int x, int y) {
 	return spaces[x][y];
 }
 
-void Board::addPiece(Piece newPiece){
+void Board::addPiece(Piece* newPiece){
 
-	if(getSpace(newPiece.point.x, newPiece.point.y).isEmpty()){
+	if(getSpace(newPiece->point.x, newPiece->point.y).isEmpty()){
 
-		pieces->push_back(newPiece);
+		pieces.push_back(newPiece);
 	}
 }

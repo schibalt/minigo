@@ -21,16 +21,16 @@ int Piece::getColor() {
 	return color;
 }
 
-Piece Piece::clone() {
+Piece* Piece::clone() {
 
-	Piece clonePiece(color, point.x, point.y);
+	Piece* clonePiece = new Piece(color, point.x, point.y);
 	return clonePiece;
 }
 
 //int Piece::Point::getI() {
 //	return point.getI();
 //}
-//
+
 //int Piece::Point::getJ() {
 //	return point.getJ();
 //}
