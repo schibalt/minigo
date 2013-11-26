@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_MiniGo.h"
+#include "State.h"
 
 class MiniGo : public QMainWindow
 {
@@ -11,9 +12,17 @@ class MiniGo : public QMainWindow
 public:
 	MiniGo(QWidget *parent = 0);
 	~MiniGo();
+	void passInitialState(State* initialState);
 
 private:
 	Ui::MiniGoClass ui;
+	void draw();
+	State* initialState;
+	/*QBrush blackBrush(Qt::GlobalColor::black);
+	QBrush whiteBrush(Qt::GlobalColor::white);*/
+
+protected:
+	virtual void paintEvent(QPaintEvent *e);
 };
 
 #endif // MINIGO_H

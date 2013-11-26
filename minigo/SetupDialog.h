@@ -8,24 +8,24 @@
 
 class Dialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	Dialog();
-	~Dialog();
+    Dialog();
+    ~Dialog();
 
-	bool goFirst;
-	int dimensions;
-	bool min;
-	int plies;
+    bool goFirst;
+    int dimensions;
+    bool min;
+    int plies;
 
 private:
-	Ui::Dialog ui;
-	MiniGo w;
-	State* initialState;
+    Ui::Dialog ui;
+    MiniGo w;
+    State* initialState;
 
-	public slots:
-		void on_okButton_clicked();
+public slots:
+    void on_okButton_clicked();
 };
 
 #endif // DIALOG_H

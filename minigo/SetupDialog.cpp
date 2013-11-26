@@ -4,24 +4,26 @@
 Dialog::Dialog()
 	: QDialog()
 {
-	ui.setupUi(this);
-	//QObject::connect(this, SIGNAL(
+	ui.setupUi (this);
+	initialState = NULL;
 }
 
-Dialog::~Dialog(){
-
+Dialog::~Dialog()
+{
 	delete initialState;
 }
 
-void Dialog::on_okButton_clicked(){
-
+void Dialog::on_okButton_clicked()
+{
 	goFirst = ui.goFirstBox->isChecked();
 	dimensions = ui.dimensionsBox->value();
 	min = ui.minMaxBox->currentIndex();
 	plies = ui.plyBox->value();
 
 	this->close();
-	initialState = new State(dimensions);
-	initialState->generateSubsequentStates(Piece::BLACK, plies);
+	initialState = new State (dimensions);
+	initialState->generateSubsequentStates (Piece::BLACK, plies);
+
+	w.passInitialState (initialState);
 	w.show();
 }

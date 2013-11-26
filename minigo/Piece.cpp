@@ -7,24 +7,26 @@
 
 #include "Piece.h"
 
-Piece::Piece(int color, int i, int j) {
-
-	this->color = color;
-	this->point = Point(i, j);
+Piece::Piece (int color, int i, int j)
+{
+    this->color = color;
+    this->point = Point (i, j);
 }
 
-Piece::~Piece() {
-	// TODO Auto-generated destructor stub
+Piece::~Piece()
+{
+    // TODO Auto-generated destructor stub
 }
 
-int Piece::getColor() {
-	return color;
+int Piece::getColor()
+{
+    return color;
 }
 
-Piece* Piece::clone() {
-
-	Piece* clonePiece = new Piece(color, point.x, point.y);
-	return clonePiece;
+Piece* Piece::clone()
+{
+    Piece* clonePiece = new Piece (color, point.x, point.y);
+    return clonePiece;
 }
 
 //int Piece::Point::getI() {

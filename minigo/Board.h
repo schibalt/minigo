@@ -24,6 +24,8 @@ public:
 	int getDimensions();
 	Board* clone();
 	void addPiece(Piece*);
+	int piecesCount();
+	Piece pieceAt(int index);
 
 private:
 	Space** spaces;

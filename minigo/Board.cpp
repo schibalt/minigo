@@ -11,63 +11,73 @@
 
 #define DEFAULTDIMENSIONS 19
 
-Board::Board() {
-
-	initialize(DEFAULTDIMENSIONS);
+Board::Board()
+{
+    initialize (DEFAULTDIMENSIONS);
 }
 
-Board::Board(int dimensions) {
-
-	initialize(dimensions);
+Board::Board (int dimensions)
+{
+    initialize (dimensions);
 }
 
-Board::~Board() {
+Board::~Board()
+{
+    for (int space = 0; space < dimensions; space++)
+        delete[] spaces[space];
 
-	for (int space = 0; space < dimensions; space++)
-		delete spaces[space];
+    delete[] spaces;
 
-	delete spaces;
-
-	for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
-		delete *(it);
-	//delete pieces;
+    while (!pieces.empty()) delete pieces.back(), pieces.pop_back();
+    //for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+    //    delete *it;
 }
 
-Board* Board::clone() {
+Board* Board::clone()
+{
+    Board* boardClone = new Board (dimensions);
 
-	Board* boardClone = new Board(dimensions);
+    //#pragma omp parallel for
+    for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+        boardClone->addPiece ( (*it)->clone());
 
-	//#pragma omp parallel for
-	for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
-		boardClone->addPiece((*it)->clone());
-
-	return boardClone;
+    return boardClone;
 }
 
-void Board::initialize(int dimensions) {
-	
-	//pieces = new vector<Piece>();
-	this->dimensions = dimensions;
-	spaces = new Space*[dimensions];
+void Board::initialize (int dimensions)
+{
+    //pieces = new vector<Piece>();
+    this->dimensions = dimensions;
+    spaces = new Space*[dimensions];
 
-	for (int space = 0; space < dimensions; space++)
-		spaces[space] = new Space[dimensions];
+    for (int space = 0; space < dimensions; space++) spaces[space] = new Space[dimensions];
 }
 
-int Board::getDimensions() {
-
-	return dimensions;
+int Board::getDimensions()
+{
+    return dimensions;
 }
 
-Space Board::getSpace(int x, int y) {
-
-	return spaces[x][y];
+Space Board::getSpace (int x, int y)
+{
+    return spaces[x][y];
 }
 
-void Board::addPiece(Piece* newPiece){
+void Board::addPiece (Piece* newPiece)
+{
+    if (getSpace (newPiece->point.x, newPiece->point.y).isEmpty())
+    {
+        pieces.push_back (newPiece);
+    }
+	spaces[newPiece->point.x][newPiece->point.y].assignPiece(newPiece);
+}
 
-	if(getSpace(newPiece->point.x, newPiece->point.y).isEmpty()){
+int Board::piecesCount()
+{
+    return pieces.size();
+}
 
-		pieces.push_back(newPiece);
-	}
+Piece Board::pieceAt (int index)
+{
+    return *pieces[index];
 }

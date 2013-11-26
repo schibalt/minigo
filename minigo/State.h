@@ -5,7 +5,6 @@
  *      Author: tiliska
  */
 
-
 #ifndef STATE_H_
 #define STATE_H_
 
@@ -23,6 +22,7 @@ public:
 	Board* board;
 	int heuristic;
 	int generateSubsequentStates(int color, int level);
+	State* stateAt(int stateIdx);
 
 private:
 	void initialize(Board* board);
