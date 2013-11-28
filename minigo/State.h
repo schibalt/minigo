@@ -22,7 +22,10 @@ public:
 	Board* board;
 	int heuristic;
 	int generateSubsequentStates(int color, int level);
-	State* stateAt(int stateIdx);
+	State* subStateAt(int stateIdx);
+	State* subStateAtDeleteOthers(int stateIdx);
+	int subStatesCount();
+	//State subStateAt(int subStateIdx);
 
 private:
 	void initialize(Board* board);

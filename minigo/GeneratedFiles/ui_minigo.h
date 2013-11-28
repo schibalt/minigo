@@ -15,8 +15,10 @@
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
@@ -28,48 +30,60 @@ class Ui_MiniGoClass
 public:
     QWidget *centralWidget;
     QGraphicsView *graphicsView;
+    QPushButton *previewButton;
+    QPushButton *moveButton;
+    QListWidget *listWidget;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
-    void setupUi (QMainWindow *MiniGoClass)
+    void setupUi(QMainWindow *MiniGoClass)
     {
         if (MiniGoClass->objectName().isEmpty())
-            MiniGoClass->setObjectName (QStringLiteral ("MiniGoClass"));
-        MiniGoClass->resize (600, 400);
-        centralWidget = new QWidget (MiniGoClass);
-        centralWidget->setObjectName (QStringLiteral ("centralWidget"));
-        graphicsView = new QGraphicsView (centralWidget);
-        graphicsView->setObjectName (QStringLiteral ("graphicsView"));
-        graphicsView->setGeometry (QRect (270, 11, 321, 321));
-		graphicsView->setScene(new QGraphicsScene());
-        MiniGoClass->setCentralWidget (centralWidget);
-        menuBar = new QMenuBar (MiniGoClass);
-        menuBar->setObjectName (QStringLiteral ("menuBar"));
-        menuBar->setGeometry (QRect (0, 0, 600, 21));
-        MiniGoClass->setMenuBar (menuBar);
-        mainToolBar = new QToolBar (MiniGoClass);
-        mainToolBar->setObjectName (QStringLiteral ("mainToolBar"));
-        MiniGoClass->addToolBar (Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar (MiniGoClass);
-        statusBar->setObjectName (QStringLiteral ("statusBar"));
-        MiniGoClass->setStatusBar (statusBar);
+            MiniGoClass->setObjectName(QStringLiteral("MiniGoClass"));
+        MiniGoClass->resize(633, 445);
+        centralWidget = new QWidget(MiniGoClass);
+        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        graphicsView = new QGraphicsView(centralWidget);
+        graphicsView->setObjectName(QStringLiteral("graphicsView"));
+        graphicsView->setGeometry(QRect(240, 10, 371, 371));
+        previewButton = new QPushButton(centralWidget);
+        previewButton->setObjectName(QStringLiteral("previewButton"));
+        previewButton->setGeometry(QRect(110, 350, 75, 23));
+        moveButton = new QPushButton(centralWidget);
+        moveButton->setObjectName(QStringLiteral("moveButton"));
+        moveButton->setGeometry(QRect(20, 350, 75, 23));
+        listWidget = new QListWidget(centralWidget);
+        listWidget->setObjectName(QStringLiteral("listWidget"));
+        listWidget->setGeometry(QRect(10, 10, 221, 321));
+        MiniGoClass->setCentralWidget(centralWidget);
+        menuBar = new QMenuBar(MiniGoClass);
+        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setGeometry(QRect(0, 0, 633, 21));
+        MiniGoClass->setMenuBar(menuBar);
+        mainToolBar = new QToolBar(MiniGoClass);
+        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        MiniGoClass->addToolBar(Qt::TopToolBarArea, mainToolBar);
+        statusBar = new QStatusBar(MiniGoClass);
+        statusBar->setObjectName(QStringLiteral("statusBar"));
+        MiniGoClass->setStatusBar(statusBar);
 
-        retranslateUi (MiniGoClass);
+        retranslateUi(MiniGoClass);
 
-        QMetaObject::connectSlotsByName (MiniGoClass);
+        QMetaObject::connectSlotsByName(MiniGoClass);
     } // setupUi
 
-    void retranslateUi (QMainWindow *MiniGoClass)
+    void retranslateUi(QMainWindow *MiniGoClass)
     {
-        MiniGoClass->setWindowTitle (QApplication::translate ("MiniGoClass", "MiniGo", 0));
+        MiniGoClass->setWindowTitle(QApplication::translate("MiniGoClass", "MiniGo", 0));
+        previewButton->setText(QApplication::translate("MiniGoClass", "Preview Move", 0));
+        moveButton->setText(QApplication::translate("MiniGoClass", "Make Move", 0));
     } // retranslateUi
 
 };
 
-namespace Ui
-{
-class MiniGoClass: public Ui_MiniGoClass {};
+namespace Ui {
+    class MiniGoClass: public Ui_MiniGoClass {};
 } // namespace Ui
 
 QT_END_NAMESPACE

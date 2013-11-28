@@ -28,9 +28,12 @@ Board::~Board()
 
     delete[] spaces;
 
-    while (!pieces.empty()) delete pieces.back(), pieces.pop_back();
-    //for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
-    //    delete *it;
+    //pieces are already being deleted when space matrix is
+    //while (!pieces.empty())
+    //    delete pieces.back(),
+    //           pieces.pop_back();
+    /*for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+        delete *it;*/
 }
 
 Board* Board::clone()
@@ -69,7 +72,7 @@ void Board::addPiece (Piece* newPiece)
     {
         pieces.push_back (newPiece);
     }
-	spaces[newPiece->point.x][newPiece->point.y].assignPiece(newPiece);
+    spaces[newPiece->point.x][newPiece->point.y].assignPiece (newPiece);
 }
 
 int Board::piecesCount()
