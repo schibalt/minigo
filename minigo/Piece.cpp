@@ -7,7 +7,7 @@
 
 #include "Piece.h"
 
-Piece::Piece (int color, int i, int j)
+Piece::Piece (bool color, char i, char j)
 {
     this->color = color;
     this->point = Point (i, j);
@@ -15,10 +15,10 @@ Piece::Piece (int color, int i, int j)
 
 Piece::~Piece()
 {
-    // TODO Auto-generated destructor stub
+	//delete point;
 }
 
-int Piece::getColor()
+bool Piece::getColor()
 {
     return color;
 }
@@ -26,13 +26,11 @@ int Piece::getColor()
 Piece* Piece::clone()
 {
     Piece* clonePiece = new Piece (color, point.x, point.y);
+    //Piece* clonePiece = new Piece (color, point->x, point->y);
     return clonePiece;
 }
 
-//int Piece::Point::getI() {
-//	return point.getI();
-//}
-
-//int Piece::Point::getJ() {
-//	return point.getJ();
-//}
+Piece::Point Piece::getPoint()
+{
+	return point;
+}

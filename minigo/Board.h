@@ -18,19 +18,19 @@ class Board {
 
 public:
 	Board();
-	Board(int dimensions);
+	Board(char dimensions);
 	virtual ~Board();
-	Space getSpace(int, int);
-	int getDimensions();
+	Space getSpace(char x, char y);
+	char getDimensions();
 	Board* clone();
-	void addPiece(Piece*);
-	int piecesCount();
-	Piece pieceAt(int index);
+	void addPiece(Piece* piece);
+	short piecesCount();
+	Piece pieceAt(short index);
 
 private:
 	Space** spaces;
-	void initialize(int dimensions);
-	int dimensions;
+	void initialize(char dimensions);
+	char dimensions;
 	vector<Piece*> pieces;
 };
 

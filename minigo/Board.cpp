@@ -16,14 +16,14 @@ Board::Board()
     initialize (DEFAULTDIMENSIONS);
 }
 
-Board::Board (int dimensions)
+Board::Board (char dimensions)
 {
     initialize (dimensions);
 }
 
 Board::~Board()
 {
-    for (int space = 0; space < dimensions; space++)
+    for (char space = 0; space < dimensions; space++)
         delete[] spaces[space];
 
     delete[] spaces;
@@ -47,40 +47,50 @@ Board* Board::clone()
     return boardClone;
 }
 
-void Board::initialize (int dimensions)
+void Board::initialize (char dimensions)
 {
     //pieces = new vector<Piece>();
     this->dimensions = dimensions;
     spaces = new Space*[dimensions];
 
-    for (int space = 0; space < dimensions; space++) spaces[space] = new Space[dimensions];
+    for (char space = 0; space < dimensions; space++)
+        spaces[space] = new Space[dimensions];
 }
 
-int Board::getDimensions()
+char Board::getDimensions()
 {
     return dimensions;
 }
 
-Space Board::getSpace (int x, int y)
+Space Board::getSpace (char x, char y)
 {
     return spaces[x][y];
 }
 
+//void Board::addPiece (Piece newPiece)
+//{
+//    if (getSpace (newPiece.getPoint().x, newPiece.getPoint().y).isEmpty())
+//    {
+//        pieces.push_back (newPiece);
+//    }
+//    spaces[newPiece.getPoint().x][newPiece.getPoint().y].assignPiece (newPiece);
+//}
+
 void Board::addPiece (Piece* newPiece)
 {
-    if (getSpace (newPiece->point.x, newPiece->point.y).isEmpty())
+    if (getSpace (newPiece->getPoint().x, newPiece->getPoint().y).isEmpty())
     {
         pieces.push_back (newPiece);
     }
-    spaces[newPiece->point.x][newPiece->point.y].assignPiece (newPiece);
+    spaces[newPiece->getPoint().x][newPiece->getPoint().y].assignPiece (newPiece);
 }
 
-int Board::piecesCount()
+short Board::piecesCount()
 {
     return pieces.size();
 }
 
-Piece Board::pieceAt (int index)
+Piece Board::pieceAt (short index)
 {
     return *pieces[index];
 }

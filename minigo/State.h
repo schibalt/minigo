@@ -15,23 +15,24 @@
 class State {
 
 public:
-	State(int dimensions);
+	State(char dimensions);
 	State(Board* preconstructedBoard);
 	virtual ~State();
 	void printState();
 	Board* board;
-	int heuristic;
-	int generateSubsequentStates(int color, int level);
-	State* subStateAt(int stateIdx);
-	State* subStateAtDeleteOthers(int stateIdx);
-	int subStatesCount();
-	//State subStateAt(int subStateIdx);
+	short heuristic;
+	short generateSubsequentStates(bool color, char level);
+	State* subStateAt(short stateIdx);
+	State* subStateAtDeleteOthers(short stateIdx);
+	short subStatesCount();
+	//State subStateAt(short subStateIdx);
+	void clearSubStates();
 
 private:
 	void initialize(Board* board);
 	vector<State*> subsequentStates;
-	Player min;
-	Player max;
+	/*Player min;
+	Player max;*/
 };
 
 #endif /* STATE_H_ */

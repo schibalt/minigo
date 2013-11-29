@@ -16,7 +16,7 @@ public:
 	Space();
 	virtual ~Space();
 	bool isEmpty();
-	Piece getPiece();
+	//Piece getPiece();
 	void assignPiece(Piece* piece);
 
 private:

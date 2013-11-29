@@ -13,12 +13,12 @@
 Space::Space()
 {
     emptyFlag = true;
-    piece = NULL;
+    //piece = NULL;
 }
 
 Space::~Space()
 {
-    delete piece;
+    //delete piece;
 }
 
 bool Space::isEmpty()
@@ -26,15 +26,16 @@ bool Space::isEmpty()
     return emptyFlag;
 }
 
-Piece Space::getPiece()
-{
-    if (emptyFlag)
-        throw NOPIECE;
-    else
-        return *piece;
-}
+//Piece Space::getPiece()
+//{
+//    if (emptyFlag)
+//        throw NOPIECE;
+//    else
+//        return piece;
+//}
 
 void Space::assignPiece (Piece* piece)
 {
     this->piece = piece;
+    emptyFlag = false;
 }

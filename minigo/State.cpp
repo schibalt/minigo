@@ -9,9 +9,14 @@
 #include "Board.h"
 #include "Piece.h"
 #include <cstdio>
+#include <iostream>
+#include <QDebug>
 #include <omp.h>
 
-State::State (int dimensions)
+using std::cout;
+using std::endl;
+
+State::State (char dimensions)
 {
     Board* board = new Board (dimensions);
     initialize (board);
@@ -25,7 +30,7 @@ State::State (Board* preconstructedBoard)
 void State::initialize (Board* board)
 {
     this->board = board;
-    heuristic = INT_MIN;
+    heuristic = NULL;
 }
 
 State::~State()
@@ -41,19 +46,19 @@ void State::printState() {
     wprintf(L"\n");
     wprintf(L"   | ");
 
-    int dimensions = board->getDimensions();
+    char dimensions = board->getDimensions();
 
-    for (int x = 0; x < dimensions; x++)
+    for (char x = 0; x < dimensions; x++)
         wprintf(L"%02i ", x);
 
     wprintf(L"\n");
     wprintf(L"---+");
-    for (int x = 0; x < dimensions; x++)
+    for (char x = 0; x < dimensions; x++)
         wprintf(L"---");
     wprintf(L"\n");
-    for (int x = 0; x < dimensions; x++) {
+    for (char x = 0; x < dimensions; x++) {
         wprintf(L"%02i |", x);
-        for (int y = 0; y < dimensions; y++) {
+        for (char y = 0; y < dimensions; y++) {
             Space space = board->getSpace(x, y);
 
             if (space.getPiece().getColor() == Piece::BLACK)
@@ -76,23 +81,26 @@ void State::printState() {
 * 1. clone current board
 * 2. ask board to place piece
 */
-int State::generateSubsequentStates (int color, int level)
+short State::generateSubsequentStates (bool color, char level)
 {
     if (level > 0)
     {
-        int dimensions = board->getDimensions();
-        int subStatesGenerated = 0;
+        char dimensions = board->getDimensions();
+        short subStatesGenerated = 0;
 
-        for (int y = 0; y < dimensions; y++)
+        #pragma omp parallel for
+        for (char y = 0; y < dimensions; y++)
         {
-            for (int x = 0; x < dimensions; x++)
+            for (char x = 0; x < dimensions; x++)
             {
                 if (board->getSpace (x, y).isEmpty() /*&& board.legalMove(color, i, j)*/)
                 {
                     Board* newBoard = board->clone();
+                    //Piece* newPiece = new Piece (color, x, y);
                     Piece* newPiece = new Piece (color, x, y);
                     newBoard->addPiece (newPiece);
 
+                    //State subsequentState = State (newBoard);
                     State* subsequentState = new State (newBoard);
                     subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
                     subsequentStates.push_back (subsequentState);
@@ -104,23 +112,39 @@ int State::generateSubsequentStates (int color, int level)
     return 0;
 }
 
-State* State::subStateAt (int stateIdx)
+State* State::subStateAt (short stateIdx)
 {
     return subsequentStates[stateIdx];
 }
 
-State* State::subStateAtDeleteOthers (int stateIdx)
+State* State::subStateAtDeleteOthers (short stateIdx)
 {
-    if (stateIdx > 0)
-        subsequentStates.erase (subsequentStates.begin(), subsequentStates.begin() + stateIdx - 1);
-
-    if (stateIdx < subsequentStates.size() - 1)
+    //this is n't hte right way to do this
+    /*if (stateIdx < subsequentStates.size() - 1)
         subsequentStates.erase (subsequentStates.begin() + stateIdx + 1, subsequentStates.end());
 
+    if (stateIdx > 0)
+        subsequentStates.erase (subsequentStates.begin(), subsequentStates.begin() + stateIdx);*/
+
+    #pragma omp parallel for
+    for (short state = subsequentStates.size(); state > 0; --state)
+    {
+        //delete subsequentStates.back(), subsequentStates.pop_back();
+        if (state - 1 != stateIdx)
+            delete subsequentStates[state - 1];
+
+        qDebug() << omp_get_thread_num() << " deleted branch " << state;
+    }
+
     return subsequentStates[stateIdx];
 }
 
-int State::subStatesCount()
+short State::subStatesCount()
 {
-	return subsequentStates.size();
+    return subsequentStates.size();
+}
+
+void State::clearSubStates()
+{
+    subsequentStates.clear();
 }

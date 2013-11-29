@@ -8,39 +8,44 @@
 #ifndef PIECE_H_
 #define PIECE_H_
 
-class Piece {
+class Piece
+{
 
 public:
-	Piece(int, int, int);
-	virtual ~Piece();
-	int getColor();
-	static const int BLACK = 0;
-	static const int WHITE = 1;
-	Piece* clone();
+    Piece (bool color, char x, char y);
+    virtual ~Piece();
+    bool getColor();
+    static const bool BLACK = 0;
+    static const bool WHITE = 1;
+    Piece* clone();
 
-	class Point {
+    class Point
+    {
 
-	private:
-	protected:
-	public:
+    private:
+    protected:
+    public:
 
-		int x, y;
-		Point() {
-			x = -1;
-			y = -1;
-		}
-		Point(int x, int y) {
+        char x, y;
+        Point()
+        {
+            x = -1,
+            y = -1;
+        }
+        Point (char x, char y)
+        {
 
-			this->x = x;
-			this->y = y;
-		}
-		//int getX();
-		//int getY();
-	};
+            this->x = x;
+            this->y = y;
+        }
+        //char getX();
+        //char getY();
+    };
+    Point getPoint();
 
-	Point point;
 private:
-	int color;
+    bool color;
+    Point point;
 };
 
 #endif /* PIECE_H_ */

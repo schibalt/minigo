@@ -89,7 +89,8 @@ public:
         plyBox->setObjectName(QStringLiteral("plyBox"));
         plyBox->setGeometry(QRect(100, 50, 42, 22));
         plyBox->setMinimum(1);
-        plyBox->setValue(1);
+        plyBox->setMaximum(10);
+        plyBox->setValue(2);
         label_3 = new QLabel(Dialog);
         label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(30, 50, 61, 16));

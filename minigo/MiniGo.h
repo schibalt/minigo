@@ -19,6 +19,8 @@ private:
     void draw();
     State* activeState;
     State* primaryState;
+	void deleteSceneItem(int sceneItemIdx);
+    QBrush brush;
     /*QBrush blackBrush(Qt::GlobalColor::black);
     QBrush whiteBrush(Qt::GlobalColor::white);*/
 
