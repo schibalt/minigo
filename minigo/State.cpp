@@ -13,22 +13,24 @@
 #include <QDebug>
 #include <omp.h>
 
+using std::swap;
 using std::cout;
 using std::endl;
 
-State::State (char dimensions)
+State::State (unsigned char dimensions, bool color)
 {
     Board* board = new Board (dimensions);
-    initialize (board);
+    initialize (board, color);
 }
 
-State::State (Board* preconstructedBoard)
+State::State (Board* preconstructedBoard, bool color)
 {
-    initialize (preconstructedBoard);
+    initialize (preconstructedBoard, color);
 }
 
-void State::initialize (Board* board)
+void State::initialize (Board* board, bool color)
 {
+    this->color = color;
     this->board = board;
     heuristic = NULL;
 }
@@ -37,8 +39,9 @@ State::~State()
 {
     delete board;
 
-    for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
-        delete * (it);
+    while(!subsequentStates.empty())
+        delete subsequentStates.back(),
+               subsequentStates.pop_back();
 }
 
 /*
@@ -81,14 +84,14 @@ void State::printState() {
 * 1. clone current board
 * 2. ask board to place piece
 */
-short State::generateSubsequentStates (bool color, char level)
+short State::generateSubsequentStates (bool color, unsigned char level)
 {
     if (level > 0)
     {
         char dimensions = board->getDimensions();
         short subStatesGenerated = 0;
 
-        #pragma omp parallel for
+        #pragma omp parallel for reduction(+:subStatesGenerated)// default(none)
         for (char y = 0; y < dimensions; y++)
         {
             for (char x = 0; x < dimensions; x++)
@@ -101,9 +104,13 @@ short State::generateSubsequentStates (bool color, char level)
                     newBoard->addPiece (newPiece);
 
                     //State subsequentState = State (newBoard);
-                    State* subsequentState = new State (newBoard);
+                    State* subsequentState = new State (newBoard, color);
                     subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
+
+                    #pragma omp critical
                     subsequentStates.push_back (subsequentState);
+                    //qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
+                    //qDebug() << "new state generated at row" << QString::number(y) << "col" << QString::number(x);
                 }
             }
         }
@@ -112,31 +119,29 @@ short State::generateSubsequentStates (bool color, char level)
     return 0;
 }
 
-State* State::subStateAt (short stateIdx)
+State* State::subStateAt (unsigned short stateIdx)
 {
     return subsequentStates[stateIdx];
 }
 
-State* State::subStateAtDeleteOthers (short stateIdx)
+State* State::subStateAtDeleteOthers (unsigned short stateIdx)
 {
-    //this is n't hte right way to do this
-    /*if (stateIdx < subsequentStates.size() - 1)
-        subsequentStates.erase (subsequentStates.begin() + stateIdx + 1, subsequentStates.end());
+    swap(subsequentStates[0], subsequentStates[stateIdx]);
 
-    if (stateIdx > 0)
-        subsequentStates.erase (subsequentStates.begin(), subsequentStates.begin() + stateIdx);*/
-
-    #pragma omp parallel for
-    for (short state = subsequentStates.size(); state > 0; --state)
+    #pragma omp parallel for //reduction(+:branchesDeleted)
+    for (short state = subsequentStates.size(); state > 1; --state)
     {
-        //delete subsequentStates.back(), subsequentStates.pop_back();
-        if (state - 1 != stateIdx)
-            delete subsequentStates[state - 1];
-
-        qDebug() << omp_get_thread_num() << " deleted branch " << state;
+        //if (state - 1 != stateIdx)
+        delete subsequentStates[state - 1];
+//        branchesDeleted++;
+        //qDebug() << omp_get_thread_num() << " deleted branch " << state;
     }
 
-    return subsequentStates[stateIdx];
+    for (unsigned short state = subsequentStates.size(); state > 1; --state)
+        //delete subsequentStates.back(),
+        subsequentStates.pop_back();
+
+    return subsequentStates[0];
 }
 
 short State::subStatesCount()
@@ -144,7 +149,19 @@ short State::subStatesCount()
     return subsequentStates.size();
 }
 
-void State::clearSubStates()
+void State::generateSubsequentStatesAfterMove(unsigned char level)
 {
-    subsequentStates.clear();
+    if(level > 1)
+        for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
+            (*it)->generateSubsequentStatesAfterMove(level - 1);
+    else
+	{
+		//short substate = 0;
+        for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
+		{
+            (*it)->generateSubsequentStates(color, level);
+			//qDebug() << "generated substates for substates" << QString::number(substate);
+			//substate++;
+		}
+	}
 }

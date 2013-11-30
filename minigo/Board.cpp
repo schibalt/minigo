@@ -16,14 +16,18 @@ Board::Board()
     initialize (DEFAULTDIMENSIONS);
 }
 
-Board::Board (char dimensions)
+Board::Board (unsigned char dimensions)
 {
     initialize (dimensions);
 }
 
 Board::~Board()
 {
-    for (char space = 0; space < dimensions; space++)
+	while(!pieces.empty()) 
+		delete pieces.back(), 
+		pieces.pop_back();
+
+    for (unsigned char space = 0; space < dimensions; space++)
         delete[] spaces[space];
 
     delete[] spaces;
@@ -47,14 +51,14 @@ Board* Board::clone()
     return boardClone;
 }
 
-void Board::initialize (char dimensions)
+void Board::initialize (unsigned char dimensions)
 {
     //pieces = new vector<Piece>();
     this->dimensions = dimensions;
-    spaces = new Space*[dimensions];
+    spaces = new Space*[this->dimensions];
 
-    for (char space = 0; space < dimensions; space++)
-        spaces[space] = new Space[dimensions];
+    for (unsigned char space = 0; space < this->dimensions; space++)
+        spaces[space] = new Space[this->dimensions];
 }
 
 char Board::getDimensions()
@@ -62,7 +66,7 @@ char Board::getDimensions()
     return dimensions;
 }
 
-Space Board::getSpace (char x, char y)
+Space Board::getSpace (unsigned char x, unsigned char y)
 {
     return spaces[x][y];
 }
@@ -78,11 +82,13 @@ Space Board::getSpace (char x, char y)
 
 void Board::addPiece (Piece* newPiece)
 {
-    if (getSpace (newPiece->getPoint().x, newPiece->getPoint().y).isEmpty())
+    //if (getSpace (newPiece->getPoint().x, newPiece->getPoint().y).isEmpty())
+    if (getSpace (newPiece->getX(), newPiece->getY()).isEmpty())
     {
         pieces.push_back (newPiece);
     }
-    spaces[newPiece->getPoint().x][newPiece->getPoint().y].assignPiece (newPiece);
+    spaces[newPiece->getX()][newPiece->getY()].assignPiece (newPiece);
+    //spaces[newPiece->getPoint().x][newPiece->getPoint().y].assignPiece (newPiece);
 }
 
 short Board::piecesCount()
@@ -90,7 +96,7 @@ short Board::piecesCount()
     return pieces.size();
 }
 
-Piece Board::pieceAt (short index)
+Piece Board::pieceAt (unsigned short index)
 {
     return *pieces[index];
 }

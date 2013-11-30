@@ -12,17 +12,15 @@ class MiniGo : public QMainWindow
 public:
     MiniGo (QWidget *parent = 0);
     ~MiniGo();
-    void passInitialState (State* initialState);
+    void passInitialState (State* initialState, unsigned char plies);
 
 private:
     Ui::MiniGoClass ui;
-    void draw();
     State* activeState;
     State* primaryState;
-	void deleteSceneItem(int sceneItemIdx);
+    State* initialState;
     QBrush brush;
-    /*QBrush blackBrush(Qt::GlobalColor::black);
-    QBrush whiteBrush(Qt::GlobalColor::white);*/
+    unsigned char plies;
 
 public slots:
     void on_previewButton_clicked();

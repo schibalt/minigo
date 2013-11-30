@@ -10,18 +10,18 @@
 #ifndef SPACE_H_
 #define SPACE_H_
 
-class Space{
-
+class Space
+{
 public:
-	Space();
-	virtual ~Space();
-	bool isEmpty();
-	//Piece getPiece();
-	void assignPiece(Piece* piece);
+    Space();
+    virtual ~Space();
+    bool isEmpty();
+    //Piece getPiece();
+    void assignPiece(Piece* piece);
 
 private:
-	bool emptyFlag;
-	Piece* piece;
+    bool emptyFlag;
+    Piece* piece;
 };
 
 #endif /* SPACE_H_ */

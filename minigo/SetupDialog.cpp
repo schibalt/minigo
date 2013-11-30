@@ -21,9 +21,11 @@ void Dialog::on_okButton_clicked()
 	plies = ui.plyBox->value();
 
 	this->close();
-	initialState = new State (dimensions);
-	initialState->generateSubsequentStates (Piece::BLACK, plies);
 
-	w.passInitialState (initialState);
+	bool startingColor = Piece::BLACK;
+	initialState = new State (dimensions, startingColor);
+	initialState->generateSubsequentStates (startingColor, plies);
+
+	w.passInitialState (initialState, plies);
 	w.show();
 }

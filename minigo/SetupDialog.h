@@ -15,9 +15,9 @@ public:
     ~Dialog();
 
     bool goFirst;
-    int dimensions;
+    char dimensions;
     bool min;
-    int plies;
+    char plies;
 
 private:
     Ui::Dialog ui;

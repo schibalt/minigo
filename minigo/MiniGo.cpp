@@ -15,21 +15,22 @@ MiniGo::MiniGo (QWidget *parent)
 
 MiniGo::~MiniGo()
 {
-    /*
-    delete initialState;*/
+    //delete initialState;
 }
 
-void MiniGo::passInitialState (State* initialState)
+void MiniGo::passInitialState (State* initialState, unsigned char plies)
 {
-	//ui.listWidget->clear();
+    this->plies = plies;
+    ui.listWidget->clear();
+    this->initialState = initialState;
     activeState = initialState;
     primaryState = initialState;
 
-    for (short state = primaryState->subStatesCount(); state > 0; --state)
+    for (unsigned short state = primaryState->subStatesCount(); state > 0; --state)
     {
         ui.listWidget->addItem ("Move " + QString::number (state) + " (" + QString::number (primaryState->subStateAt (state - 1)->heuristic) + ")");
     }
-	ui.listWidget->setCurrentRow(0);
+    ui.listWidget->setCurrentRow(0);
 }
 
 void MiniGo::paintEvent (QPaintEvent *e)
@@ -50,12 +51,13 @@ void MiniGo::paintEvent (QPaintEvent *e)
     short pieceRad = cellDim - (viewWidth / 100);
 
     //print pieces
-    for (short piece = activeState->board->piecesCount(); piece > 0; --piece)
+    for (unsigned short piece = activeState->board->piecesCount(); piece > 0; --piece)
     {
         Piece pieceObj = activeState->board->pieceAt (piece - 1);
-        short x = pieceObj.getPoint().x + 1, y = pieceObj.getPoint().y + 1;
+		unsigned char x = pieceObj.getX() + 1, y = pieceObj.getY() + 1;
+        //short x = pieceObj.getPoint().x + 1, y = pieceObj.getPoint().y + 1;
 
-		brush.setColor (Qt::GlobalColor(pieceObj.getColor() + 2));
+        brush.setColor (Qt::GlobalColor(pieceObj.getColor() + 2));
 
         ui.graphicsView->scene()->addEllipse
         (
@@ -71,7 +73,7 @@ void MiniGo::paintEvent (QPaintEvent *e)
 
 void MiniGo::on_previewButton_clicked()
 {
-	short row = ui.listWidget->currentIndex().row();
+    unsigned short row = ui.listWidget->currentIndex().row();
     if (activeState == primaryState->subStateAt (row))
         activeState = primaryState;
     else
@@ -80,10 +82,13 @@ void MiniGo::on_previewButton_clicked()
 
 void MiniGo::on_moveButton_clicked()
 {
-	short row = ui.listWidget->currentIndex().row();
-    primaryState = primaryState->subStateAtDeleteOthers (ui.listWidget->currentIndex().row());
-	//primaryState = primaryState->subStateAt(row);
-	//primaryState->clearSubStates();
+    unsigned short row = ui.listWidget->currentIndex().row();
+	ui.statusBar->showMessage("Deleting obsolete states");
+	primaryState = primaryState->subStateAtDeleteOthers (ui.listWidget->currentIndex().row());//, ui.progressBar);
+	ui.statusBar->showMessage("Generating new ply");
+	primaryState->generateSubsequentStatesAfterMove(plies - 1);
+    //primaryState = primaryState->subStateAt(row);
+    //primaryState->clearSubStates();
     activeState = primaryState;
 }
 

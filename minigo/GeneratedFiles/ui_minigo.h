@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'minigo.ui'
 **
-** Created by: Qt User Interface Compiler version 5.2.1
+** Created by: Qt User Interface Compiler version 5.1.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -18,10 +18,12 @@
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QProgressBar>
 
 QT_BEGIN_NAMESPACE
 
@@ -33,6 +35,7 @@ public:
     QPushButton *previewButton;
     QPushButton *moveButton;
     QListWidget *listWidget;
+    QProgressBar *progressBar;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -46,16 +49,20 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         graphicsView = new QGraphicsView(centralWidget);
         graphicsView->setObjectName(QStringLiteral("graphicsView"));
-        graphicsView->setGeometry(QRect(240, 10, 371, 371));
+        graphicsView->setGeometry(QRect(240, 10, 380, 380));
         previewButton = new QPushButton(centralWidget);
         previewButton->setObjectName(QStringLiteral("previewButton"));
-        previewButton->setGeometry(QRect(110, 350, 75, 23));
+        previewButton->setGeometry(QRect(110, 340, 75, 23));
         moveButton = new QPushButton(centralWidget);
         moveButton->setObjectName(QStringLiteral("moveButton"));
-        moveButton->setGeometry(QRect(20, 350, 75, 23));
+        moveButton->setGeometry(QRect(20, 340, 75, 23));
         listWidget = new QListWidget(centralWidget);
         listWidget->setObjectName(QStringLiteral("listWidget"));
         listWidget->setGeometry(QRect(10, 10, 221, 321));
+        progressBar = new QProgressBar(centralWidget);
+        progressBar->setObjectName(QStringLiteral("progressBar"));
+        progressBar->setGeometry(QRect(20, 370, 211, 17));
+        progressBar->setValue(24);
         MiniGoClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MiniGoClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
