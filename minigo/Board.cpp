@@ -77,12 +77,14 @@ bool Board::moveIsLegal(bool color, unsigned char x, unsigned char y)
     return spaceIsEmpty(x, y);// && !chainWillBeCaptured(color, x, y);
 }
 
+bool Board::outOfBounds(unsigned char x, unsigned char y)
+{
+    return x < 0 || x >= dimensions || y < 0 || y >= dimensions;
+}
+
 bool Board::spaceIsEmpty(unsigned char x, unsigned char y)
 {
-    if(x < 0 || x >= dimensions || y < 0 || y >= dimensions)
-        return false;
-    else
-        return spaces[x][y].isEmpty();
+    return spaces[x][y].isEmpty();
 }
 
 bool Board::spaceIsSameColor(bool color, unsigned char x, unsigned char y)
@@ -153,7 +155,7 @@ unsigned short Board::getNumWhitePieces()
     unsigned short whitePieces = 0;
     for (boost::ptr_vector<Piece>::iterator iter = pieces.begin(); iter != pieces.end(); ++iter)
         if(iter->getColor() == Piece::WHITE)
-			whitePieces++;
+            whitePieces++;
     return whitePieces;
 }
 
@@ -161,7 +163,72 @@ unsigned short Board::getNumBlackPieces()
 {
     unsigned short blackPieces = 0;
     for (boost::ptr_vector<Piece>::iterator iter = pieces.begin(); iter != pieces.end(); ++iter)
-          if(iter->getColor() == Piece::BLACK)
-			blackPieces++;
+        if(iter->getColor() == Piece::BLACK)
+            blackPieces++;
     return blackPieces;
+}
+
+unsigned short Board::computeBlackTerritory()
+{
+    unsigned short territory = 0;
+
+    #pragma omp parallel for schedule(dynamic) reduction(+:territory)
+    for(  short y = 0; y < dimensions; ++y)
+    {
+        for( short x = 0; x < dimensions; ++x)
+        {
+            if(isHeldBy(Piece::BLACK, x, y))
+                territory++;
+        }
+    }
+}
+
+bool Board::isHeldBy(bool color, unsigned char x, unsigned char y)
+{
+    if(outOfBounds(x, y))
+        return false;
+
+    if(!spaceIsEmpty(x, y))
+        if(spaceIsSameColor(color, x, y))
+            return true;
+        else
+            return false;
+
+    bool whiteFoundLeft = false,
+         whiteFoundRight = false,
+         whiteFoundUp = false,
+         whiteFoundDown = false;
+
+    for(char row = 0; row < 3; ++row)
+    {
+        switch(row)
+        {
+        case 0:
+            if(isHeldBy((color + 1) % 2, x - 1, y))
+                return false;
+            if(isHeldBy((color + 1) % 2, x + 1, y))
+                return false;
+            break;
+        case 1:
+            if(isHeldBy((color + 1) % 2, x, y - 1))
+                return false;
+            break;
+        case 2:
+            if(isHeldBy((color + 1) % 2, x, y + 1))
+                return false;
+            break;
+        }
+    }
+}
+
+unsigned short Board::computeWhiteTerritory()
+{
+    #pragma omp parallel for schedule(dynamic)
+    for( short y = 0; y < dimensions; ++y)
+    {
+        for( short x = 0; x < dimensions; ++x)
+        {
+
+        }
+    }
 }

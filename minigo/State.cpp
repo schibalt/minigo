@@ -8,7 +8,6 @@
 #include "State.h"
 #include "Board.h"
 #include "Piece.h"
-//#include <iostream>
 #include <QDebug>
 #include <omp.h>
 
@@ -36,17 +35,9 @@ void State::initialize (Board* board, bool color, unsigned char plies)
 
 State::~State()
 {
-    //boost::ptr_vector<State>::iterator it;
-    //for (it=subsequentStates.begin(); it < subsequentStates.end();/*no iterator increment*/ )
-//       it = subsequentStates.erase(it);
     delete board;
 }
 
-/*
-* for each possible state
-* 1. clone current board
-* 2. ask board to place piece
-*/
 void State::generateSubsequentStates (bool color, unsigned char level)
 {
     if (level > 0)
@@ -54,10 +45,11 @@ void State::generateSubsequentStates (bool color, unsigned char level)
         unsigned char dimensions = board->getDimensions();
         short subStatesGenerated = 0;
 
-        #pragma omp parallel for //reduction(+:subStatesGenerated)// default(none)
-        for (char y = 0; y < dimensions; y++)
+		//generate possible subsequent states (in parallel)
+        #pragma omp parallel for schedule(dynamic)//reduction(+:subStatesGenerated)// default(none)
+        for (short y = 0; y < dimensions; y++)
         {
-            for (char x = 0; x < dimensions; x++)
+            for (short x = 0; x < dimensions; x++)
             {
                 if (board->moveIsLegal (color, x, y))
                 {
@@ -66,20 +58,26 @@ void State::generateSubsequentStates (bool color, unsigned char level)
                     newBoard->addPiece (newPiece);
 
                     State* subsequentState = new State (newBoard, color, level - 1);
-                    subStatesGenerated++;
+					subsequentState->setMoveXY(x, y);
                     //subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
                     #pragma omp critical
                     subsequentStates.push_back (subsequentState);
+
+                    //if(color == Piece::WHITE)
+					
+
+					subStatesGenerated++;
                     //qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
                     //qDebug() << "new state generated at row" << QString::number(y) << "col" << QString::number(x);
                 }//if
             }//x
         }//y
+
         qDebug() << subStatesGenerated << "subsequent states generated at level" << level;
     }//if
-	else
+	else //farthest ply ahead; compute heuristic
 	{
-		//compute player heuristics
+		//blackPoints = board->computeBlackTerritory();
 	}
 }//generateSubsequentStates
 
@@ -140,4 +138,11 @@ Piece State::pieceAt (unsigned short index)
 bool State::hasAnySubsequentStates()
 {
     return subsequentStates.size() > 0;
+}
+
+void State::changeColor(){throw;}
+
+void State::setMoveXY(unsigned char x, unsigned char y)
+{
+	this->x = x, this->y = y;
 }

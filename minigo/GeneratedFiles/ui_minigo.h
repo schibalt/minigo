@@ -80,7 +80,7 @@ public:
     void retranslateUi(QMainWindow *MiniGoClass)
     {
         MiniGoClass->setWindowTitle(QApplication::translate("MiniGoClass", "MiniGo", 0));
-        previewButton->setText(QApplication::translate("MiniGoClass", "Preview Move", 0));
+        previewButton->setText(QApplication::translate("MiniGoClass", "Reset", 0));
         moveButton->setText(QApplication::translate("MiniGoClass", "Make Move", 0));
         passButton->setText(QApplication::translate("MiniGoClass", "Pass", 0));
     } // retranslateUi

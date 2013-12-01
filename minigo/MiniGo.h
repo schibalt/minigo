@@ -21,11 +21,12 @@ private:
     QBrush brush;
     unsigned char plies;
 	bool pass;
+	void updateListWidget();
 
 public slots:
     void on_previewButton_clicked();
     void on_moveButton_clicked();
-    void on_listWidget_itemClicked (QListWidgetItem * item);
+    void on_listWidget_currentItemChanged (QListWidgetItem * item);
     void on_passButton_clicked ();
 
 protected:

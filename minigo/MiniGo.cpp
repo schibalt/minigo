@@ -25,15 +25,19 @@ void MiniGo::passInitialState (unsigned char dimensions, unsigned char plies)
     qDebug() << "size of board is" << sizeof(Board);
 
     this->plies = plies;
-    ui.listWidget->clear();
 
     primaryState = new State(dimensions, Piece::WHITE, plies);
     activeState = primaryState;
+	updateListWidget();
+}
 
-    for (unsigned short stateIdx = primaryState->subStatesCount(); stateIdx > 0; --stateIdx)
+void MiniGo::updateListWidget()
+{
+    ui.listWidget->clear();
+    for (unsigned short stateIdx = 0; stateIdx < primaryState->subStatesCount(); ++stateIdx)
     {
-        unsigned char x = primaryState->subStateAt (stateIdx - 1).x, y = primaryState->subStateAt (stateIdx - 1).y;
-        ui.listWidget->addItem (x + "," + y);
+        unsigned char x = primaryState->subStateAt (stateIdx).x, y = primaryState->subStateAt (stateIdx).y;
+        ui.listWidget->addItem (QString::number(x) + ", " + QString::number(y));
     }
     ui.listWidget->setCurrentRow(0);
 }
@@ -78,7 +82,7 @@ void MiniGo::paintEvent (QPaintEvent *e)
 
 void MiniGo::on_previewButton_clicked()
 {
-    unsigned short row = ui.listWidget->currentIndex().row();
+ /*   unsigned short row = ui.listWidget->currentIndex().row();
 
     if (activeState == &primaryState->subStateAt (row))
     {
@@ -87,7 +91,8 @@ void MiniGo::on_previewButton_clicked()
     else
     {
         activeState = &primaryState->subStateAt (row);
-    }
+    }*/
+        activeState = primaryState;
 }
 
 void MiniGo::on_moveButton_clicked()
@@ -104,6 +109,7 @@ void MiniGo::on_moveButton_clicked()
         primaryState->generateSubsequentStatesAfterMove(plies - 1);
 
         ui.statusBar->showMessage("Move made");
+		updateListWidget();
     }
     else
     {
@@ -111,15 +117,25 @@ void MiniGo::on_moveButton_clicked()
     }
 }
 
-void MiniGo::on_listWidget_itemClicked (QListWidgetItem * item)
+void MiniGo::on_listWidget_currentItemChanged (QListWidgetItem * item)
 {
-    ui.statusBar->showMessage ("Item " + QString::number (ui.listWidget->currentIndex().row()) + " selected");
+	unsigned short row = ui.listWidget->currentIndex().row();
+
+	if(row < primaryState->subStatesCount())
+	{
+    ui.statusBar->showMessage ("Item " + QString::number (row) + " selected");
+        activeState = &primaryState->subStateAt (row);
+		paintEvent(NULL);
+	}
 }
 
 void MiniGo::on_passButton_clicked ()
 {
     if(pass == 0)
+	{
+		//primaryState->changeColor();
         pass++;
+	}
     else
     {
         QMessageBox::information(NULL, "arg one", "arg two");

@@ -30,6 +30,8 @@ public:
 	Piece pieceAt(unsigned short index);
 	bool hasAnySubsequentStates();
 	unsigned char x, y;
+	void changeColor();
+	void setMoveXY(unsigned char x, unsigned char y);
 
 private:
 	Board* board;
