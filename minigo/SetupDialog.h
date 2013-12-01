@@ -22,7 +22,7 @@ public:
 private:
     Ui::Dialog ui;
     MiniGo w;
-    State* initialState;
+    //State* initialState;
 
 public slots:
     void on_okButton_clicked();

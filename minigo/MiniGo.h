@@ -18,7 +18,7 @@ private:
     Ui::MiniGoClass ui;
     State* activeState;
     State* primaryState;
-    State* initialState;
+    //State* initialState;
     QBrush brush;
     unsigned char plies;
 

@@ -11,6 +11,7 @@
 #include "Space.h"
 #include "Piece.h"
 #include <vector>
+#include "boost/ptr_container/serialize_ptr_vector.hpp"
 
 using std::vector;
 
@@ -22,17 +23,18 @@ public:
 	virtual ~Board();
 
 	Space getSpace(unsigned char x, unsigned char y);
-	char getDimensions();
+	unsigned char getDimensions();
 	Board* clone();
 	void addPiece(Piece* piece);
-	short piecesCount();
+	unsigned short piecesCount();
 	Piece pieceAt(unsigned short index);
 
 private:
 	Space** spaces;
 	void initialize(unsigned char dimensions);
-	char dimensions;
-	vector<Piece*> pieces;
+	unsigned char dimensions;
+	//vector<Piece*> pieces;
+	boost::ptr_vector<Piece> pieces;
 };
 
 #endif /* BOARD_H_ */

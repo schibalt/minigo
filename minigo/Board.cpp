@@ -21,12 +21,18 @@ Board::Board (unsigned char dimensions)
     initialize (dimensions);
 }
 
+void Board::initialize (unsigned char dimensions)
+{
+    this->dimensions = dimensions;
+    spaces = new Space*[this->dimensions];
+
+    for (unsigned char space = 0; space < this->dimensions; space++)
+        spaces[space] = new Space[this->dimensions];
+}
+
 Board::~Board()
 {
-	while(!pieces.empty()) 
-		delete pieces.back(), 
-		pieces.pop_back();
-
+	//pieces.erase(pieces.begin());
     for (unsigned char space = 0; space < dimensions; space++)
         delete[] spaces[space];
 
@@ -45,23 +51,14 @@ Board* Board::clone()
     Board* boardClone = new Board (dimensions);
 
     //#pragma omp parallel for
-    for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
-        boardClone->addPiece ( (*it)->clone());
+    //for (vector<Piece*>::iterator it = pieces.begin(); it != pieces.end(); ++it)
+    for (boost::ptr_vector<Piece>::iterator iter = pieces.begin(); iter != pieces.end(); ++iter)
+        boardClone->addPiece ( iter->clone());
 
     return boardClone;
 }
 
-void Board::initialize (unsigned char dimensions)
-{
-    //pieces = new vector<Piece>();
-    this->dimensions = dimensions;
-    spaces = new Space*[this->dimensions];
-
-    for (unsigned char space = 0; space < this->dimensions; space++)
-        spaces[space] = new Space[this->dimensions];
-}
-
-char Board::getDimensions()
+unsigned char Board::getDimensions()
 {
     return dimensions;
 }
@@ -91,12 +88,12 @@ void Board::addPiece (Piece* newPiece)
     //spaces[newPiece->getPoint().x][newPiece->getPoint().y].assignPiece (newPiece);
 }
 
-short Board::piecesCount()
+unsigned short Board::piecesCount()
 {
     return pieces.size();
 }
 
 Piece Board::pieceAt (unsigned short index)
 {
-    return *pieces[index];
+    return pieces[index];
 }

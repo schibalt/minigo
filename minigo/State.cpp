@@ -16,32 +16,33 @@
 using std::swap;
 using std::cout;
 using std::endl;
+using boost::iterator;
 
-State::State (unsigned char dimensions, bool color)
+State::State (unsigned char dimensions, bool color, unsigned char plies)
 {
     Board* board = new Board (dimensions);
-    initialize (board, color);
+    initialize (board, color, plies);
 }
 
-State::State (Board* preconstructedBoard, bool color)
+State::State (Board* preconstructedBoard, bool color, unsigned char plies)
 {
-    initialize (preconstructedBoard, color);
+    initialize (preconstructedBoard, color, plies);
 }
 
-void State::initialize (Board* board, bool color)
+void State::initialize (Board* board, bool color, unsigned char plies)
 {
     this->color = color;
     this->board = board;
     heuristic = NULL;
+	generateSubsequentStates((color + 1) % 2, plies);
 }
 
 State::~State()
 {
+	//boost::ptr_vector<State>::iterator it;
+	//for (it=subsequentStates.begin(); it < subsequentStates.end();/*no iterator increment*/ )
+ //       it = subsequentStates.erase(it);
     delete board;
-
-    while(!subsequentStates.empty())
-        delete subsequentStates.back(),
-               subsequentStates.pop_back();
 }
 
 /*
@@ -84,14 +85,14 @@ void State::printState() {
 * 1. clone current board
 * 2. ask board to place piece
 */
-short State::generateSubsequentStates (bool color, unsigned char level)
+void State::generateSubsequentStates (bool color, unsigned char level)
 {
     if (level > 0)
     {
         char dimensions = board->getDimensions();
-        short subStatesGenerated = 0;
+        //short subStatesGenerated = 0;
 
-        #pragma omp parallel for reduction(+:subStatesGenerated)// default(none)
+        #pragma omp parallel for //reduction(+:subStatesGenerated)// default(none)
         for (char y = 0; y < dimensions; y++)
         {
             for (char x = 0; x < dimensions; x++)
@@ -99,49 +100,52 @@ short State::generateSubsequentStates (bool color, unsigned char level)
                 if (board->getSpace (x, y).isEmpty() /*&& board.legalMove(color, i, j)*/)
                 {
                     Board* newBoard = board->clone();
-                    //Piece* newPiece = new Piece (color, x, y);
                     Piece* newPiece = new Piece (color, x, y);
                     newBoard->addPiece (newPiece);
 
-                    //State subsequentState = State (newBoard);
-                    State* subsequentState = new State (newBoard, color);
-                    subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
+                    State* subsequentState = new State (newBoard, color, level - 1);
+                    //subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
 
                     #pragma omp critical
                     subsequentStates.push_back (subsequentState);
-                    //qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
+                    qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
                     //qDebug() << "new state generated at row" << QString::number(y) << "col" << QString::number(x);
                 }
             }
         }
-        return subStatesGenerated;
+        //return subStatesGenerated;
     }
-    return 0;
+    //return 0;
 }
 
-State* State::subStateAt (unsigned short stateIdx)
+State& State::subStateAt (size_t stateIdx)
 {
-    return subsequentStates[stateIdx];
+    return subsequentStates[stateIdx];//[stateIdx];
 }
 
-State* State::subStateAtDeleteOthers (unsigned short stateIdx)
+State* State::subStateAtDeleteOthers (size_t stateIdx)
 {
-    swap(subsequentStates[0], subsequentStates[stateIdx]);
-
-    #pragma omp parallel for //reduction(+:branchesDeleted)
-    for (short state = subsequentStates.size(); state > 1; --state)
-    {
-        //if (state - 1 != stateIdx)
-        delete subsequentStates[state - 1];
-//        branchesDeleted++;
-        //qDebug() << omp_get_thread_num() << " deleted branch " << state;
-    }
+ //   swap(subsequentStates[0], subsequentStates[stateIdx]);
+	//
+	//boost::ptr_vector<State>::iterator it;
+	//for (it = subsequentStates.begin() + 1; it < subsequentStates.end();/*no iterator increment*/ )
+ //       it = subsequentStates.erase(it);
+	State * chosenState = subsequentStates.release(subsequentStates.begin() + stateIdx).release();;
+	subsequentStates.release();
+    return chosenState;
+//    #pragma omp parallel for //reduction(+:branchesDeleted)
+//    for (short state = subsequentStates.size(); state > 1; --state)
+//    {
+//        //if (state - 1 != stateIdx)
+//        //subsequentStates.erase(subsequentStates.begin() + 1, subsequentStates.end());
+////        branchesDeleted++;
+//        //qDebug() << omp_get_thread_num() << " deleted branch " << state;
+//    }
 
     for (unsigned short state = subsequentStates.size(); state > 1; --state)
         //delete subsequentStates.back(),
         subsequentStates.pop_back();
 
-    return subsequentStates[0];
 }
 
 short State::subStatesCount()
@@ -152,16 +156,31 @@ short State::subStatesCount()
 void State::generateSubsequentStatesAfterMove(unsigned char level)
 {
     if(level > 1)
-        for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
-            (*it)->generateSubsequentStatesAfterMove(level - 1);
+		for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+			iter->generateSubsequentStatesAfterMove(level - 1);
     else
 	{
 		//short substate = 0;
-        for (vector<State*>::iterator it = subsequentStates.begin(); it != subsequentStates.end(); ++it)
-		{
-            (*it)->generateSubsequentStates(color, level);
+        for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+        {
+            iter->generateSubsequentStates(color, level);
 			//qDebug() << "generated substates for substates" << QString::number(substate);
 			//substate++;
 		}
 	}
+}
+
+unsigned char State::getDimensions()
+{
+    return board->getDimensions();
+}
+
+unsigned short State::piecesCount()
+{
+    return board->piecesCount();
+}
+
+Piece State::pieceAt (unsigned short index)
+{
+    return board->pieceAt(index);
 }

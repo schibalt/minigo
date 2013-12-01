@@ -5,12 +5,13 @@ Dialog::Dialog()
 	: QDialog()
 {
 	ui.setupUi (this);
-	initialState = NULL;
+	//initialState = NULL;
+	on_okButton_clicked();
 }
 
 Dialog::~Dialog()
 {
-	delete initialState;
+	//delete initialState;
 }
 
 void Dialog::on_okButton_clicked()
@@ -22,10 +23,11 @@ void Dialog::on_okButton_clicked()
 
 	this->close();
 
-	bool startingColor = Piece::BLACK;
-	initialState = new State (dimensions, startingColor);
-	initialState->generateSubsequentStates (startingColor, plies);
+	//bool startingColor = Piece::BLACK;
+	/*State initialState = State (13, startingColor);
+	initialState.generateSubsequentStates (startingColor, plies);*/
 
-	w.passInitialState (initialState, plies);
+	w.passInitialState (new State(19, Piece::WHITE, plies), plies);
 	w.show();
+	//w.on_moveButton_clicked();
 }
