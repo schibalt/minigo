@@ -18,35 +18,10 @@ public:
     static const bool WHITE = 1;
     Piece* clone();
     unsigned char getX(), getY();
-    /* char* x;
-     char* y;*/
-    //class Point
-    //{
-    //private:
-    //protected:
-    //public:
-
-    //    char x, y;
-    //    Point()
-    //    {
-    //        x = -1,
-    //        y = -1;
-    //    }
-    //    Point (char x, char y)
-    //    {
-
-    //        this->x = x;
-    //        this->y = y;
-    //    }
-    //    //char getX();
-    //    //char getY();
-    //};
-    //Point getPoint();
 
 private:
     bool color;
     unsigned char x, y;
-    //Point point;
 };
 
 #endif /* PIECE_H_ */

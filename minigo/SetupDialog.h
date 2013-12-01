@@ -14,15 +14,12 @@ public:
     Dialog();
     ~Dialog();
 
-    bool goFirst;
-    char dimensions;
-    bool min;
-    char plies;
+    bool goFirst, min;
+    unsigned char dimensions, plies;
 
 private:
     Ui::Dialog ui;
     MiniGo w;
-    //State* initialState;
 
 public slots:
     void on_okButton_clicked();

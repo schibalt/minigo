@@ -12,20 +12,21 @@ class MiniGo : public QMainWindow
 public:
     MiniGo (QWidget *parent = 0);
     ~MiniGo();
-    void passInitialState (State* initialState, unsigned char plies);
+    void passInitialState (unsigned char dimensions, unsigned char plies);
 
 private:
     Ui::MiniGoClass ui;
     State* activeState;
     State* primaryState;
-    //State* initialState;
     QBrush brush;
     unsigned char plies;
+	bool pass;
 
 public slots:
     void on_previewButton_clicked();
     void on_moveButton_clicked();
     void on_listWidget_itemClicked (QListWidgetItem * item);
+    void on_passButton_clicked ();
 
 protected:
     virtual void paintEvent (QPaintEvent *e);

@@ -1,6 +1,8 @@
 #include "MiniGo.h"
 #include <QtGui\QPainter>
 #include <QtGui\QPaintEvent>
+#include <QMessagebox>
+#include <QDebug>
 
 #define SCENEWIDTHOFFSET 3
 
@@ -9,26 +11,29 @@ MiniGo::MiniGo (QWidget *parent)
 {
     ui.setupUi (this);
     ui.graphicsView->setScene (new QGraphicsScene (this));
-
     brush.setStyle (Qt::SolidPattern);
+    pass = 0;
 }
 
 MiniGo::~MiniGo()
 {
-	delete primaryState;
+    delete primaryState;
 }
 
-void MiniGo::passInitialState (State* initialState, unsigned char plies)
+void MiniGo::passInitialState (unsigned char dimensions, unsigned char plies)
 {
+    qDebug() << "size of board is" << sizeof(Board);
+
     this->plies = plies;
     ui.listWidget->clear();
-    //this->initialState = initialState;
-    activeState = initialState;
-    primaryState = initialState;
 
-    for (unsigned short state = primaryState->subStatesCount(); state > 0; --state)
+    primaryState = new State(dimensions, Piece::WHITE, plies);
+    activeState = primaryState;
+
+    for (unsigned short stateIdx = primaryState->subStatesCount(); stateIdx > 0; --stateIdx)
     {
-        ui.listWidget->addItem ("Move " + QString::number (state) + " (" + QString::number (primaryState->subStateAt (state - 1).heuristic) + ")");
+        unsigned char x = primaryState->subStateAt (stateIdx - 1).x, y = primaryState->subStateAt (stateIdx - 1).y;
+        ui.listWidget->addItem (x + "," + y);
     }
     ui.listWidget->setCurrentRow(0);
 }
@@ -54,7 +59,7 @@ void MiniGo::paintEvent (QPaintEvent *e)
     for (unsigned short piece = activeState->piecesCount(); piece > 0; --piece)
     {
         Piece pieceObj = activeState->pieceAt (piece - 1);
-		unsigned char x = pieceObj.getX() + 1, y = pieceObj.getY() + 1;
+        unsigned char x = pieceObj.getX() + 1, y = pieceObj.getY() + 1;
         //short x = pieceObj.getPoint().x + 1, y = pieceObj.getPoint().y + 1;
 
         brush.setColor (Qt::GlobalColor(pieceObj.getColor() + 2));
@@ -74,25 +79,50 @@ void MiniGo::paintEvent (QPaintEvent *e)
 void MiniGo::on_previewButton_clicked()
 {
     unsigned short row = ui.listWidget->currentIndex().row();
+
     if (activeState == &primaryState->subStateAt (row))
+    {
         activeState = primaryState;
+    }
     else
+    {
         activeState = &primaryState->subStateAt (row);
+    }
 }
 
 void MiniGo::on_moveButton_clicked()
 {
-    unsigned short row = ui.listWidget->currentIndex().row();
-	ui.statusBar->showMessage("Deleting obsolete states");
-	primaryState = primaryState->subStateAtDeleteOthers (ui.listWidget->currentIndex().row());//, ui.progressBar);
-    activeState = primaryState;
-	//primaryState = initialState;
-	ui.statusBar->showMessage("Generating new ply");
-	primaryState->generateSubsequentStatesAfterMove(plies - 1);
-	ui.statusBar->showMessage("Move made");
+    if(primaryState->hasAnySubsequentStates())
+    {
+        unsigned short row = ui.listWidget->currentIndex().row();
+
+        ui.statusBar->showMessage("Deleting obsolete states");
+        primaryState = primaryState->releaseSubStateAt (row);
+        activeState = primaryState;
+
+        ui.statusBar->showMessage("Generating new ply");
+        primaryState->generateSubsequentStatesAfterMove(plies - 1);
+
+        ui.statusBar->showMessage("Move made");
+    }
+    else
+    {
+        ui.statusBar->showMessage("No more moves!");
+    }
 }
 
 void MiniGo::on_listWidget_itemClicked (QListWidgetItem * item)
 {
     ui.statusBar->showMessage ("Item " + QString::number (ui.listWidget->currentIndex().row()) + " selected");
+}
+
+void MiniGo::on_passButton_clicked ()
+{
+    if(pass == 0)
+        pass++;
+    else
+    {
+        QMessageBox::information(NULL, "arg one", "arg two");
+        this->close();
+    }
 }

@@ -18,7 +18,6 @@
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
@@ -34,7 +33,7 @@ public:
     QPushButton *previewButton;
     QPushButton *moveButton;
     QListWidget *listWidget;
-    QProgressBar *progressBar;
+    QPushButton *passButton;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -58,10 +57,9 @@ public:
         listWidget = new QListWidget(centralWidget);
         listWidget->setObjectName(QStringLiteral("listWidget"));
         listWidget->setGeometry(QRect(10, 10, 221, 321));
-        progressBar = new QProgressBar(centralWidget);
-        progressBar->setObjectName(QStringLiteral("progressBar"));
-        progressBar->setGeometry(QRect(20, 370, 211, 17));
-        progressBar->setValue(24);
+        passButton = new QPushButton(centralWidget);
+        passButton->setObjectName(QStringLiteral("passButton"));
+        passButton->setGeometry(QRect(20, 370, 75, 23));
         MiniGoClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MiniGoClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -84,6 +82,7 @@ public:
         MiniGoClass->setWindowTitle(QApplication::translate("MiniGoClass", "MiniGo", 0));
         previewButton->setText(QApplication::translate("MiniGoClass", "Preview Move", 0));
         moveButton->setText(QApplication::translate("MiniGoClass", "Make Move", 0));
+        passButton->setText(QApplication::translate("MiniGoClass", "Pass", 0));
     } // retranslateUi
 
 };

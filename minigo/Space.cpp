@@ -13,26 +13,21 @@
 Space::Space()
 {
     emptyFlag = true;
-    //piece = NULL;
 }
 
 Space::~Space()
 {
-    //delete piece;
+}
+
+bool Space::isSameColor(bool color)
+{
+	return color == piece->getColor();
 }
 
 bool Space::isEmpty()
 {
     return emptyFlag;
 }
-
-//Piece Space::getPiece()
-//{
-//    if (emptyFlag)
-//        throw NOPIECE;
-//    else
-//        return piece;
-//}
 
 void Space::assignPiece (Piece* piece)
 {

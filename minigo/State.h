@@ -20,14 +20,16 @@ public:
 	State(Board* preconstructedBoard, bool color, unsigned char plies);
 	virtual ~State();
 
-	short heuristic;
+	short blackPoints, whitePoints;
 	State& subStateAt(size_t stateIdx);
- 	State* subStateAtDeleteOthers(size_t stateIdx);
+ 	State* releaseSubStateAt(size_t stateIdx);
 	void generateSubsequentStatesAfterMove(unsigned char level);
 	short subStatesCount();
 	unsigned char getDimensions();
 	unsigned short piecesCount();
 	Piece pieceAt(unsigned short index);
+	bool hasAnySubsequentStates();
+	unsigned char x, y;
 
 private:
 	Board* board;
