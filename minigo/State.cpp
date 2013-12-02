@@ -68,7 +68,6 @@ void State::generateSubsequentStates (bool color, unsigned char level)
 
 					subStatesGenerated++;
                     //qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
-                    //qDebug() << "new state generated at row" << QString::number(y) << "col" << QString::number(x);
                 }//if
             }//x
         }//y
@@ -77,7 +76,7 @@ void State::generateSubsequentStates (bool color, unsigned char level)
     }//if
 	else //farthest ply ahead; compute heuristic
 	{
-		//blackPoints = board->computeBlackTerritory();
+		blackPoints = board->computeTerritory(color);
 	}
 }//generateSubsequentStates
 
@@ -89,7 +88,7 @@ State& State::subStateAt (size_t stateIdx)
 State* State::releaseSubStateAt (size_t stateIdx)
 {
     State * chosenState = subsequentStates.release(subsequentStates.begin() + stateIdx).release();
-    subsequentStates.release();
+    //subsequentStates.release();
     return chosenState;
 }
 
@@ -111,11 +110,7 @@ void State::generateSubsequentStatesAfterMove(unsigned char level)
     }
     else
     {
-        for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
-        {
-            iter->generateSubsequentStates(color, level);
-            //gssamloops++;
-        }
+		this->generateSubsequentStates(color, 1);
     }
     //qDebug() << "gssamloops" << gssamloops;
 }

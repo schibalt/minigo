@@ -97,15 +97,17 @@ void MiniGo::on_previewButton_clicked()
 
 void MiniGo::on_moveButton_clicked()
 {
-    if(primaryState->hasAnySubsequentStates())
+    if(primaryState->piecesCount() < primaryState->getDimensions() * primaryState->getDimensions())
     {
         unsigned short row = ui.listWidget->currentIndex().row();
 
         ui.statusBar->showMessage("Deleting obsolete states");
+		
         primaryState = primaryState->releaseSubStateAt (row);
         activeState = primaryState;
 
         ui.statusBar->showMessage("Generating new ply");
+		
         primaryState->generateSubsequentStatesAfterMove(plies - 1);
 
         ui.statusBar->showMessage("Move made");

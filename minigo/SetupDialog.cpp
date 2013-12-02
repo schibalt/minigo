@@ -21,7 +21,7 @@ void Dialog::on_okButton_clicked()
 
 	this->close();
 
-	w.passInitialState (9, 2);
+	w.passInitialState (9, 1);
 	w.show();
 	//w.on_moveButton_clicked();
 }

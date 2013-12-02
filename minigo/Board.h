@@ -28,8 +28,7 @@ public:
     unsigned short piecesCount();
     unsigned short getNumWhitePieces();
     unsigned short getNumBlackPieces();
-    unsigned short computeBlackTerritory();
-    unsigned short computeWhiteTerritory();
+    unsigned short computeTerritory(bool color);
 
     unsigned char getDimensions();
     Board* clone();
@@ -42,7 +41,7 @@ private:
     unsigned char dimensions;
     boost::ptr_vector<Piece> pieces;
     bool chainWillBeCaptured(bool color, unsigned char x, unsigned char y);
-	bool isHeldBy(bool color, unsigned char x, unsigned char y);
+	bool spaceIsHeldBy(bool color, unsigned char x, unsigned char y, vector<bool> checkedCoordinates);
     bool outOfBounds(unsigned char x, unsigned char y);
 };
 

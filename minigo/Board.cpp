@@ -168,67 +168,72 @@ unsigned short Board::getNumBlackPieces()
     return blackPieces;
 }
 
-unsigned short Board::computeBlackTerritory()
+unsigned short Board::computeTerritory(bool color)
 {
     unsigned short territory = 0;
+    vector<bool> checkedCoordinates (dimensions * dimensions, false);
 
-    #pragma omp parallel for schedule(dynamic) reduction(+:territory)
-    for(  short y = 0; y < dimensions; ++y)
+    //#pragma omp parallel for schedule(dynamic) reduction(+:territory)
+    for(short y = 0; y < dimensions; ++y)
     {
-        for( short x = 0; x < dimensions; ++x)
+        for(short x = 0; x < dimensions; ++x)
         {
-            if(isHeldBy(Piece::BLACK, x, y))
+    checkedCoordinates[dimensions * y + x] = true;
+            if((!spaceIsEmpty(x, y) && spaceIsSameColor(color, x, y))
+                    || spaceIsHeldBy(color, x, y, checkedCoordinates))
                 territory++;
         }
     }
+	return territory;
 }
 
-bool Board::isHeldBy(bool color, unsigned char x, unsigned char y)
+bool Board::spaceIsHeldBy(bool color, unsigned char x, unsigned char y, vector<bool> checkedCoordinates)
 {
-    if(outOfBounds(x, y))
-        return false;
+//    FIND-PATH(x, y)
+//
+//if (x, y outside maze) return false
+//if (x, y is goal) return true
+//if (x, y not open) return false
+//mark x, y as part of solution path
+//if (FIND-PATH(North of x, y) == true) return true
+//if (FIND-PATH(East of x, y) == true) return true
+//if (FIND-PATH(South of x, y) == true) return true
+//if (FIND-PATH(West of x, y) == true) return true
+//unmark x, y as part of solution path
+//return false
 
-    if(!spaceIsEmpty(x, y))
-        if(spaceIsSameColor(color, x, y))
-            return true;
-        else
-            return false;
+    checkedCoordinates[dimensions * y + x] = true;
 
-    bool whiteFoundLeft = false,
-         whiteFoundRight = false,
-         whiteFoundUp = false,
-         whiteFoundDown = false;
-
-    for(char row = 0; row < 3; ++row)
+    for(char direction = 1; direction < 5; direction++)
     {
-        switch(row)
+        short xoffset, yoffset;
+
+        switch(direction)
         {
-        case 0:
-            if(isHeldBy((color + 1) % 2, x - 1, y))
-                return false;
-            if(isHeldBy((color + 1) % 2, x + 1, y))
-                return false;
+        case 1://west
+            xoffset = x - 1, yoffset = y;
             break;
-        case 1:
-            if(isHeldBy((color + 1) % 2, x, y - 1))
-                return false;
+        case 2://east
+            xoffset = x + 1, yoffset = y;
             break;
-        case 2:
-            if(isHeldBy((color + 1) % 2, x, y + 1))
-                return false;
+        case 3://north
+            xoffset = x, yoffset = y - 1;
+            break;
+        case 4://east
+            xoffset = x, yoffset = y + 1;
             break;
         }
-    }
-}
 
-unsigned short Board::computeWhiteTerritory()
-{
-    #pragma omp parallel for schedule(dynamic)
-    for( short y = 0; y < dimensions; ++y)
-    {
-        for( short x = 0; x < dimensions; ++x)
+        if(!outOfBounds(xoffset, yoffset))
         {
-
+            if(!spaceIsEmpty(xoffset, yoffset))
+            {
+                if(!spaceIsSameColor(color, xoffset, yoffset))
+                    return false;
+            }
+            else if(!checkedCoordinates[dimensions * yoffset + xoffset])
+                return spaceIsHeldBy(color, xoffset, yoffset, checkedCoordinates);
         }
     }
+    return true;
 }
