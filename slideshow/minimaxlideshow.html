@@ -1,0 +1,452 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>reveal.js - The HTML Presentation Framework</title>
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+    <link href="css/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="css/shThemeDefault.css" rel="stylesheet" type="text/css" />
+    <!--     <link href="prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify.js"></script>-->
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write('<link rel="stylesheet" href="css/print/' + (window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper') + '.css" type="text/css" media="print">');
+    </script>
+    <script src="js/shCore.js"></script>
+    <script src="js/shBrushCpp.js"></script>
+    <script>
+        SyntaxHighlighter.all()
+    </script>
+
+    <style type="text/css">
+        .height_600px_class {
+            height: 600px;
+        }
+
+        .overflow_y_hidden_class {
+            overflow-y: hidden !important;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+</head>
+<body onload="prettyPrint()">
+    <div class="reveal">
+        <!-- Any section element inside of this container is displayed as a slide -->
+        <div class="slides">
+            <section>
+                <h2>MINIMAX Algorithm (with alternating moves)</h2>
+                <h4>Don't Make a Move Without It</h4>
+                <p>
+                    <small>Andrew Tilisky</small>
+                </p>
+                <a class="image">
+                    <img src="C:\Users\tiliska\Downloads\minimax.tif">
+                </a>
+            </section>
+            <section>
+                <h1>The Game</h1>
+                <h2>perfect information</h2>
+                <a class="image">
+                    <img width="200" src="C:\Users\tiliska\Downloads\checkers.jpg">
+                </a>
+                <a class="image">
+                    <img width="200" src="C:\Users\tiliska\Downloads\go.jpg">
+                </a>
+                <a class="image">
+                    <img width="200" src="C:\Users\tiliska\Downloads\othello.jpg">
+                </a>
+                <a class="image">
+                    <img width="200" src="C:\Users\tiliska\Downloads\chess.jpg">
+                </a>
+                <br />
+                <p>sorry, scrabblers & card players</p>
+            </section>
+            <section data-background="C:/Users/tiliska/Downloads/goedit.jpeg">
+                <h3 style="color: black;">The Players</h3>
+                <ul style="color: black;">
+                    <li>MAX (you) moves first</li>
+                    <li>MIN (your opponent)</li>
+                </ul>
+                <br />
+                <br />
+                <p style="color: black;">MIN moves after MAX and players alternate turns...</p>
+            </section>
+            <section>
+                <h3>Game Components wrt Minimax</h3>
+                <ol>
+                    <li>Initial state = blank
+                    </li>
+                    <li>successor function (recursive)
+                    </li>
+                    <li>the player making the move
+                    </li>
+                    <li>terminal/farthest states
+                    </li>
+                    <li>utility function
+                    </li>
+                </ol>
+            </section>
+            <section>
+                <h2>Game Tree</h2>
+                <a class="image">
+                    <img height="600" src="C:\Users\tiliska\Downloads\game-tree.png">
+                </a>
+            </section>
+            <section>
+                <h2>Terminal States</h2>
+                <a class="image">
+                    <img height="300" src="C:\Users\tiliska\Downloads\x-win.png">
+                </a>
+                <p>States 0, 1, & 2; 1 is a victory for X</p>
+                <ul>
+                    <li>Win: 1
+                    </li>
+                    <li>Draw: 0
+                    </li>
+                    <li>Lose: -1
+                    </li>
+                </ul>
+                <p>↑ arbitrary</p>
+            </section>
+            <section>
+                <h2>mini</h2>
+                <h1>max</h1>
+                <a class="image">
+                    <img width="400" src="C:\Users\tiliska\Downloads\final-states.png">
+                </a>
+                <p>low rank - worse outcome</p>
+                <p>high rank - better outcome</p>
+            </section>
+            <section>
+                <h2>intermediate heuristic</h2>
+                <a class="image">
+                    <img width="400" src="C:\Users\tiliska\Downloads\x-win-with-rank.png">
+                </a>
+                <p>intemediate rank for X's move = MAX(possible moves)</p>
+            </section>
+            <section>
+                <h2>mini</h2>
+                <h3>max</h3>
+                <a class="image">
+                    <img width="400" src="C:\Users\tiliska\Downloads\o-win.png">
+                </a>
+                <p>state 0 - X loses; intermediate state is ranked a loss</p>
+            </section>
+            <section>
+                <h2>initial go state</h2>
+                <pre class="brush: cpp">
+State::State (unsigned char dimensions, bool color, unsigned char plies)
+{
+    Board* board = new Board (dimensions);
+    initialize (board, color, plies);
+}
+
+State::State (Board* preconstructedBoard, bool color, unsigned char plies)
+{
+    initialize (preconstructedBoard, color, plies);
+}
+
+void State::initialize (Board* board, bool color, unsigned char plies)
+{
+    this->color = color;
+    this->board = board;
+    whitePoints = NULL, blackPoints = NULL, x = NULL, y = NULL;
+    generateSubsequentStates ( (color + 1) % 2, plies);
+}</pre>
+            </section>
+            <section>
+                <h2>recursive state generator</h2>
+                <pre class="brush: cpp; class-name:'height_600px_class'">
+void State::generateSubsequentStates (bool color, unsigned char level)
+{
+    if (level > 0)
+    {
+        unsigned char dimensions = board->getDimensions();
+
+        //generate possible subsequent states (in parallel)
+        #pragma omp parallel for schedule(dynamic)
+        for (short y = 0; y < dimensions; y++)
+        {
+            for (short x = 0; x < dimensions; x++)
+            {
+                if (board->moveIsLegal (color, x, y))
+                {
+                    Board* newBoard = board->clone();
+                    Piece* newPiece = new Piece (color, x, y);
+                    newBoard->addPiece (newPiece);
+
+                    State* subsequentState = new State (newBoard, color, level - 1);
+                    subsequentState->setMoveXY (x, y);
+                    #pragma omp critical
+                    subsequentStates.push_back (subsequentState);
+                }
+            }
+        }
+        short heuristic;
+
+		if(hasAnySubsequentStates())
+			heuristic = subsequentStates.front().blackPoints;
+
+        for (boost::ptr_vector&lt;State&gt;::iterator iter = subsequentStates.begin(); 
+                    iter != subsequentStates.end(); ++iter)
+        {
+            if (color == Piece::WHITE) //MIN
+            {
+                heuristic = MIN (iter->blackPoints, heuristic);
+            }
+            else
+            {
+                heuristic = MAX (iter->blackPoints, heuristic);
+            }
+        }
+		blackPoints = heuristic;
+    }
+    else //farthest ply ahead; compute heuristic
+    {
+        blackPoints = board->computeTerritory (Piece::BLACK);
+    }
+}
+            </pre>
+            </section>
+            <section>
+                <h2>graphical example</h2>
+                <a class="image">
+                    <img width="900" src="C:\Users\tiliska\Downloads\Drawing1.gif">
+                </a>
+                <p>color indicates decision maker</p>
+            </section>
+            <section>
+                <section>
+                    <h2>notes</h2>
+                    <p>OMP appears to avoid forking new threads in calls higher on the stack for a thread that's already been forked</p>
+                    <p>(conservative in cases of recursion).</p>
+                    <br />
+                    <p>In some cases threads have to be forked even if a single-threaded call is to a function in which one assumes they would be.</p>
+                </section>
+                <section>
+                    <pre class="brush: cpp; class-name:'height_400px_class'">
+#pragma omp parallel for
+    for(short subStates = 0; subStates < subsequentStates.size(); subStates++)
+	    subStateAt(subStates).generateSubsequentStatesAfterMove(level - 1);
+                        </pre>
+                    versus
+                    <pre class="brush: cpp; class-name:'height_400px_class'">
+        for (boost::ptr_vector&lt;State&gt;::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+            iter->generateSubsequentStatesAfterMove (level - 1);
+    </pre>
+                </section>
+            </section>
+            <section>
+                <h3>is something burning?</h3>
+                <table>
+                    <tr>
+                        <td>dimensions</td>
+                        <td>2 plies</td>
+                        <td>3 plies</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td></td>
+                        <td>479</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td></td>
+                        <td>13451</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td></td>
+                        <td>71398</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td></td>
+                        <td>292156 (4 min)</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>4784</td>
+                        <td>731794 (12 min)</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>15989</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>27589</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>44619</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>683930 (11 min)</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </section>
+            <section>
+                <h3>bad memories</h3>
+                <table>
+                    <tr>
+                        <td>dimension</td>
+                        <td>branching factor</td>
+                        <td>2 plies</td>
+                        <td>3 plies</td>
+                        <td>4 plies</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>25</td>
+                        <td>625</td>
+                        <td>15625</td>
+                        <td style="background-color: yellow; color: black;">390625</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>36</td>
+                        <td>1296</td>
+                        <td>46656</td>
+                        <td style="background-color: red; color: black;">1679616</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>49</td>
+                        <td>2401</td>
+                        <td style="background-color: yellow; color: black;">117649</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>64</td>
+                        <td>4096</td>
+                        <td style="background-color: yellow; color: black;">262144</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>81</td>
+                        <td>6561</td>
+                        <td style="background-color: yellow; color: black;">531441</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>100</td>
+                        <td>10000</td>
+                        <td style="background-color: red; color: black;">1000000</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>121</td>
+                        <td>14641</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>144</td>
+                        <td>20736</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>169</td>
+                        <td>28561</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>···</td>
+                        <td>···</td>
+                        <td>···</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>361</td>
+                        <td style="background-color: yellow; color: black;">130321</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+                sizes: board: 56, state: 64 , piece: 16, space: 24 
+            </section>
+            <section data-background="C:/Users/tiliska/Downloads/Go_is_a_strategic_board_game_for_two_players.jpg">
+                <h2 style="color: black;">go rules</h2>
+                <ol style="color: black;">
+                    <li>Empty board (if no handicaps) ✓</li>
+                    <li>Black moves first ✓</li>
+                    <li>A stone is placed on a empty intersection ✓</li>
+                    <li>Player may pass at any time</li>
+                    <li>Stones of one color are captured when all adjacent intersections (liberties) are occupied by enemy</li>
+                    <li>Former board positions may not be recreated</li>
+                    <li>Game over - two consecutive passes ✓</li>
+                    <li>Score = occupied + surrounded spaces</li>
+                    <li>Higher score wins</li>
+                </ol>
+            </section>
+        </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+        // Full list of configuration options available here:
+        // https://github.com/hakimel/reveal.js#configuration
+        Reveal.initialize({
+            controls: true,
+            progress: true,
+            history: true,
+            center: true,
+
+            theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+            transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+            // Parallax scrolling
+            // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+            // parallaxBackgroundSize: '2100px 900px',
+
+            // Optional libraries used to extend on reveal.js
+            dependencies: [
+                { src: 'lib/js/classList.js', condition: function () { return !document.body.classList; } },
+                { src: 'plugin/markdown/marked.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/markdown/markdown.js', condition: function () { return !!document.querySelector('[data-markdown]'); } },
+                { src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } },
+                { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () { return !!document.body.classList; } },
+                { src: 'plugin/notes/notes.js', async: true, condition: function () { return !!document.body.classList; } }
+            ]
+        });
+    </script>
+</body>
+</html>

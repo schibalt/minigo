@@ -4,6 +4,9 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MiniGo.h"
 #include "State.h"
+#include <QtGui\QPainter>
+#include <QtGui\QPaintEvent>
+#include <QMessagebox>
 
 class MiniGo : public QMainWindow
 {
@@ -20,8 +23,8 @@ private:
     State* primaryState;
     QBrush brush;
     unsigned char plies;
-	bool pass;
-	void updateListWidget();
+    bool pass;
+    void updateListWidget();
 
 public slots:
     void on_previewButton_clicked();

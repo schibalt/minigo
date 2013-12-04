@@ -8,19 +8,29 @@
 #ifndef PIECE_H_
 #define PIECE_H_
 
+#include <QDebug>
+
 class Piece
 {
 public:
-    Piece (bool color, unsigned char x, unsigned char y);
+
+    enum colors
+    {
+        BLACK = 0,
+        WHITE = 1
+    };
+    Piece (colors color, unsigned char x, unsigned char y);
+    Piece (const Piece &obj);
     virtual ~Piece();
-    bool getColor();
-    static const bool BLACK = 0;
-    static const bool WHITE = 1;
-    Piece* clone();
+    Piece & operator= (const Piece& that);
+
+    colors getColor();
+    static const char* getColorName (colors color);
     unsigned char getX(), getY();
+    //Piece* clone();
 
 private:
-    bool color;
+    colors color;
     unsigned char x, y;
 };
 

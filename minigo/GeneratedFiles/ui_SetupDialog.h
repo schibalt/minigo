@@ -13,8 +13,6 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QComboBox>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
@@ -36,9 +34,6 @@ public:
     QPushButton *cancelButton;
     QSpinBox *dimensionsBox;
     QLabel *label;
-    QComboBox *minMaxBox;
-    QLabel *label_2;
-    QCheckBox *goFirstBox;
     QSpinBox *plyBox;
     QLabel *label_3;
 
@@ -46,10 +41,10 @@ public:
     {
         if (Dialog->objectName().isEmpty())
             Dialog->setObjectName(QStringLiteral("Dialog"));
-        Dialog->resize(388, 132);
+        Dialog->resize(388, 87);
         layoutWidget = new QWidget(Dialog);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(10, 80, 351, 33));
+        layoutWidget->setGeometry(QRect(20, 40, 351, 33));
         hboxLayout = new QHBoxLayout(layoutWidget);
         hboxLayout->setSpacing(6);
         hboxLayout->setObjectName(QStringLiteral("hboxLayout"));
@@ -70,30 +65,27 @@ public:
 
         dimensionsBox = new QSpinBox(Dialog);
         dimensionsBox->setObjectName(QStringLiteral("dimensionsBox"));
-        dimensionsBox->setGeometry(QRect(100, 10, 42, 22));
+        dimensionsBox->setGeometry(QRect(240, 10, 42, 22));
         dimensionsBox->setMinimum(3);
         dimensionsBox->setValue(19);
         label = new QLabel(Dialog);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(30, 10, 61, 16));
-        minMaxBox = new QComboBox(Dialog);
-        minMaxBox->setObjectName(QStringLiteral("minMaxBox"));
-        minMaxBox->setGeometry(QRect(290, 50, 69, 22));
-        label_2 = new QLabel(Dialog);
-        label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(220, 50, 61, 16));
-        goFirstBox = new QCheckBox(Dialog);
-        goFirstBox->setObjectName(QStringLiteral("goFirstBox"));
-        goFirstBox->setGeometry(QRect(300, 20, 70, 17));
+        label->setGeometry(QRect(170, 10, 61, 16));
         plyBox = new QSpinBox(Dialog);
         plyBox->setObjectName(QStringLiteral("plyBox"));
-        plyBox->setGeometry(QRect(100, 50, 42, 22));
+        plyBox->setGeometry(QRect(100, 10, 42, 22));
         plyBox->setMinimum(1);
         plyBox->setMaximum(10);
         plyBox->setValue(2);
         label_3 = new QLabel(Dialog);
         label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(30, 50, 61, 16));
+        label_3->setGeometry(QRect(30, 10, 61, 16));
+        layoutWidget->raise();
+        dimensionsBox->raise();
+        label->raise();
+        plyBox->raise();
+        label_3->raise();
+        okButton->raise();
 
         retranslateUi(Dialog);
 
@@ -106,13 +98,6 @@ public:
         okButton->setText(QApplication::translate("Dialog", "OK", 0));
         cancelButton->setText(QApplication::translate("Dialog", "Cancel", 0));
         label->setText(QApplication::translate("Dialog", "Dimensions", 0));
-        minMaxBox->clear();
-        minMaxBox->insertItems(0, QStringList()
-         << QApplication::translate("Dialog", "MIN", 0)
-         << QApplication::translate("Dialog", "MAX", 0)
-        );
-        label_2->setText(QApplication::translate("Dialog", "Min/max", 0));
-        goFirstBox->setText(QApplication::translate("Dialog", "Go First", 0));
         label_3->setText(QApplication::translate("Dialog", "Plies", 0));
     } // retranslateUi
 

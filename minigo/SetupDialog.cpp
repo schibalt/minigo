@@ -1,5 +1,4 @@
 #include "SetupDialog.h"
-#include "Piece.h"
 
 Dialog::Dialog()
 	: QDialog()
@@ -14,14 +13,13 @@ Dialog::~Dialog()
 
 void Dialog::on_okButton_clicked()
 {
-	goFirst = ui.goFirstBox->isChecked();
-	dimensions = ui.dimensionsBox->value();
-	min = ui.minMaxBox->currentIndex();
-	plies = ui.plyBox->value();
-
-	this->close();
-
-	w.passInitialState (9, 1);
+	//goFirst = ui.goFirstBox->isChecked();
+	unsigned char dimensions = ui.dimensionsBox->value();
+	//min = ui.minMaxBox->currentIndex();
+	unsigned char plies = ui.plyBox->value();
+	
+	w.passInitialState (7, 2);
+	//w.passInitialState (dimensions, plies);
 	w.show();
 	//w.on_moveButton_clicked();
 }

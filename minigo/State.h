@@ -9,36 +9,42 @@
 #define STATE_H_
 
 #include "Board.h"
-#include "Player.h"
-#include "State.h"
-#include "boost/ptr_container/ptr_vector.hpp"
+#include "time.h"
 
-class State {
+#define MIN(a, b) ((a < b) ? a : b)
+#define MAX(a, b) ((a > b) ? a : b)
+#define ABS(n) (-n)
 
+class State
+{
 public:
-	State(unsigned char dimensions, bool color, unsigned char plies);
-	State(Board* preconstructedBoard, bool color, unsigned char plies);
-	virtual ~State();
+    State (unsigned char dimensions, bool color, unsigned char plies);
+    State (Board* preconstructedBoard, bool color, unsigned char plies);
+    virtual ~State();
 
-	short blackPoints, whitePoints;
-	State& subStateAt(size_t stateIdx);
- 	State* releaseSubStateAt(size_t stateIdx);
-	void generateSubsequentStatesAfterMove(unsigned char level);
-	short subStatesCount();
-	unsigned char getDimensions();
-	unsigned short piecesCount();
-	Piece pieceAt(unsigned short index);
-	bool hasAnySubsequentStates();
-	unsigned char x, y;
-	void changeColor();
-	void setMoveXY(unsigned char x, unsigned char y);
+    State& subStateAt (size_t stateIdx);
+    State* releaseSubStateAt (size_t stateIdx);
+    Piece* pieceAt (unsigned short index);
+
+    void generateSubsequentStatesAfterMove (unsigned char level);
+    void changeColor();
+    void makeMove (unsigned char x, unsigned char y);
+
+    short subStatesCount();
+    unsigned char getDimensions();
+    unsigned short piecesCount();
+    bool hasAnySubsequentStates();
+
+    short blackPoints, whitePoints;
+    unsigned char x, y;
 
 private:
-	Board* board;
-	bool color;
-	void initialize(Board* board, bool color, unsigned char plies);
-	boost::ptr_vector<State> subsequentStates;
-	void generateSubsequentStates(bool color, unsigned char level);
+    Board* board;
+    bool color;
+    boost::ptr_vector<State> subsequentStates;
+
+    void initialize (Board* board, bool color, unsigned char plies);
+    void generateSubsequentStates (Piece::colors color, unsigned char level);
 };
 
 #endif /* STATE_H_ */

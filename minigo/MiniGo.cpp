@@ -1,8 +1,4 @@
 #include "MiniGo.h"
-#include <QtGui\QPainter>
-#include <QtGui\QPaintEvent>
-#include <QMessagebox>
-#include <QDebug>
 
 #define SCENEWIDTHOFFSET 3
 
@@ -23,6 +19,9 @@ MiniGo::~MiniGo()
 void MiniGo::passInitialState (unsigned char dimensions, unsigned char plies)
 {
     qDebug() << "size of board is" << sizeof(Board);
+    qDebug() << "size of state is" << sizeof(State);
+    qDebug() << "size of piece is" << sizeof(Piece);
+    qDebug() << "size of space is" << sizeof(Space);
 
     this->plies = plies;
 
@@ -37,7 +36,8 @@ void MiniGo::updateListWidget()
     for (unsigned short stateIdx = 0; stateIdx < primaryState->subStatesCount(); ++stateIdx)
     {
         unsigned char x = primaryState->subStateAt (stateIdx).x, y = primaryState->subStateAt (stateIdx).y;
-        ui.listWidget->addItem (QString::number(x) + ", " + QString::number(y));
+			short blackpoints = primaryState->subStateAt (stateIdx).blackPoints;
+        ui.listWidget->addItem (QString::number(x) + ", " + QString::number(y) + " (" + QString::number(blackpoints) + ")");
     }
     ui.listWidget->setCurrentRow(0);
 }
@@ -60,13 +60,13 @@ void MiniGo::paintEvent (QPaintEvent *e)
     short pieceRad = cellDim - (viewWidth / 100);
 
     //print pieces
-    for (unsigned short piece = activeState->piecesCount(); piece > 0; --piece)
+	for (unsigned short pieceIdx = 0; pieceIdx < activeState->piecesCount(); ++pieceIdx)
     {
-        Piece pieceObj = activeState->pieceAt (piece - 1);
-        unsigned char x = pieceObj.getX() + 1, y = pieceObj.getY() + 1;
+        Piece* piece = activeState->pieceAt (pieceIdx);
+        unsigned char x = piece->getX() + 1, y = piece->getY() + 1;
         //short x = pieceObj.getPoint().x + 1, y = pieceObj.getPoint().y + 1;
 
-        brush.setColor (Qt::GlobalColor(pieceObj.getColor() + 2));
+        brush.setColor (Qt::GlobalColor(piece->getColor() + 2));
 
         ui.graphicsView->scene()->addEllipse
         (
@@ -103,12 +103,26 @@ void MiniGo::on_moveButton_clicked()
 
         ui.statusBar->showMessage("Deleting obsolete states");
 		
+        //uint64_t runstarttime = time::GetTimeMs64();
+
         primaryState = primaryState->releaseSubStateAt (row);
         activeState = primaryState;
+	
+        /*uint64_t runendtime = time::GetTimeMs64();
+        uint64_t runtime = runendtime - runstarttime;*/
+		
+        //qDebug() << "deletion time" << runtime << "for" << plies << "plies dimension" << primaryState->getDimensions();
 
         ui.statusBar->showMessage("Generating new ply");
 		
-        primaryState->generateSubsequentStatesAfterMove(plies - 1);
+       uint64_t  runstarttime = time::GetTimeMs64();
+		
+        primaryState->generateSubsequentStatesAfterMove(plies);
+	
+        uint64_t runendtime = time::GetTimeMs64();
+        uint64_t runtime = runendtime - runstarttime;
+		
+        qDebug() << "new ply generation time" << runtime << "for" << plies << "plies dimension" << primaryState->getDimensions();
 
         ui.statusBar->showMessage("Move made");
 		updateListWidget();
@@ -140,7 +154,7 @@ void MiniGo::on_passButton_clicked ()
 	}
     else
     {
-        QMessageBox::information(NULL, "arg one", "arg two");
+        QMessageBox::information(NULL, "", "arg two");
         this->close();
     }
 }

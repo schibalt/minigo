@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>388</width>
-    <height>132</height>
+    <height>87</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>80</y>
+     <x>20</x>
+     <y>40</y>
      <width>351</width>
      <height>33</height>
     </rect>
@@ -70,7 +70,7 @@
   <widget class="QSpinBox" name="dimensionsBox">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>240</x>
      <y>10</y>
      <width>42</width>
      <height>22</height>
@@ -86,7 +86,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>170</x>
      <y>10</y>
      <width>61</width>
      <height>16</height>
@@ -96,57 +96,11 @@
     <string>Dimensions</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="minMaxBox">
-   <property name="geometry">
-    <rect>
-     <x>290</x>
-     <y>50</y>
-     <width>69</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>MIN</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>MAX</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>50</y>
-     <width>61</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Min/max</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="goFirstBox">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>20</y>
-     <width>70</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Go First</string>
-   </property>
-  </widget>
   <widget class="QSpinBox" name="plyBox">
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>50</y>
+     <y>10</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -165,7 +119,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>50</y>
+     <y>10</y>
      <width>61</width>
      <height>16</height>
     </rect>
@@ -174,6 +128,12 @@
     <string>Plies</string>
    </property>
   </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>dimensionsBox</zorder>
+  <zorder>label</zorder>
+  <zorder>plyBox</zorder>
+  <zorder>label_3</zorder>
+  <zorder>okButton</zorder>
  </widget>
  <resources/>
  <connections/>

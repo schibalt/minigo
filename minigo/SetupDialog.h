@@ -14,8 +14,8 @@ public:
     Dialog();
     ~Dialog();
 
-    bool goFirst, min;
-    unsigned char dimensions, plies;
+    //bool goFirst, min;
+    //unsigned char dimensions, plies;
 
 private:
     Ui::Dialog ui;

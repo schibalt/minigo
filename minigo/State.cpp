@@ -6,18 +6,18 @@
 */
 
 #include "State.h"
-#include "Board.h"
-#include "Piece.h"
-#include <QDebug>
-#include <omp.h>
-
-using std::swap;
-using boost::iterator;
 
 State::State (unsigned char dimensions, bool color, unsigned char plies)
 {
     Board* board = new Board (dimensions);
+	
+        uint64_t runstarttime = time::GetTimeMs64();
     initialize (board, color, plies);
+	
+        uint64_t runendtime = time::GetTimeMs64();
+        uint64_t runtime = runendtime - runstarttime;
+		
+        qDebug() << "initial generation time" << runtime << "for" << plies << "plies dimension" << getDimensions();
 }
 
 State::State (Board* preconstructedBoard, bool color, unsigned char plies)
@@ -30,7 +30,8 @@ void State::initialize (Board* board, bool color, unsigned char plies)
     this->color = color;
     this->board = board;
     whitePoints = NULL, blackPoints = NULL, x = NULL, y = NULL;
-    generateSubsequentStates((color + 1) % 2, plies);
+
+    generateSubsequentStates ( (Piece::colors)((color + 1) % 2), plies);
 }
 
 State::~State()
@@ -38,14 +39,14 @@ State::~State()
     delete board;
 }
 
-void State::generateSubsequentStates (bool color, unsigned char level)
+void State::generateSubsequentStates (Piece::colors color, unsigned char level)
 {
     if (level > 0)
     {
         unsigned char dimensions = board->getDimensions();
         short subStatesGenerated = 0;
 
-		//generate possible subsequent states (in parallel)
+        //generate possible subsequent states (in parallel)
         #pragma omp parallel for schedule(dynamic)//reduction(+:subStatesGenerated)// default(none)
         for (short y = 0; y < dimensions; y++)
         {
@@ -53,32 +54,48 @@ void State::generateSubsequentStates (bool color, unsigned char level)
             {
                 if (board->moveIsLegal (color, x, y))
                 {
-                    Board* newBoard = board->clone();
+                    Board* newBoard = new Board(*board);
                     Piece* newPiece = new Piece (color, x, y);
                     newBoard->addPiece (newPiece);
 
                     State* subsequentState = new State (newBoard, color, level - 1);
-					subsequentState->setMoveXY(x, y);
+                    subsequentState->makeMove (x, y);
                     //subStatesGenerated += subsequentState->generateSubsequentStates ( (color + 1) % 2, level - 1) + 1;
                     #pragma omp critical
                     subsequentStates.push_back (subsequentState);
 
-                    //if(color == Piece::WHITE)
-					
-
-					subStatesGenerated++;
+                    subStatesGenerated++;
+					//qDebug() << "thread" << omp_get_thread_num() << "x" << x << "y" << y << "level" << level;
                     //qDebug()  << "generated state" << y * dimensions + x << "at level" << QString::number(level);
                 }//if
             }//x
         }//y
-
-        qDebug() << subStatesGenerated << "subsequent states generated at level" << level;
+        short heuristic;
+		if(hasAnySubsequentStates())
+			heuristic = subsequentStates.front().blackPoints;
+        for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+        {
+            if (color == Piece::WHITE) //MIN
+            {
+                heuristic = MIN (iter->blackPoints, heuristic);
+                //heuristic = MIN (iter->whitePoints, heuristic);
+            }
+            else
+            {
+                heuristic = MAX (iter->blackPoints, heuristic);
+                //heuristic = MAX (iter->whitePoints, heuristic);
+            }
+        }
+		blackPoints = heuristic;
+    /*    qDebug() << subStatesGenerated << "subsequent states generated at level" << level;
+		qDebug() << "thread" << omp_get_thread_num() << "at level" << level;*/
     }//if
-	else //farthest ply ahead; compute heuristic
-	{
-		blackPoints = board->computeTerritory(color);
-	}
-}//generateSubsequentStates
+    else //farthest ply ahead; compute heuristic
+    {
+        blackPoints = board->computeTerritory (Piece::BLACK);
+        //whitePoints = ABS (board->computeTerritory (Piece::WHITE));
+    }
+}
 
 State& State::subStateAt (size_t stateIdx)
 {
@@ -87,7 +104,7 @@ State& State::subStateAt (size_t stateIdx)
 
 State* State::releaseSubStateAt (size_t stateIdx)
 {
-    State * chosenState = subsequentStates.release(subsequentStates.begin() + stateIdx).release();
+    State * chosenState = subsequentStates.release (subsequentStates.begin() + stateIdx).release();
     //subsequentStates.release();
     return chosenState;
 }
@@ -97,20 +114,27 @@ short State::subStatesCount()
     return subsequentStates.size();
 }
 
-void State::generateSubsequentStatesAfterMove(unsigned char level)
+void State::generateSubsequentStatesAfterMove (unsigned char level)
 {
     //unsigned short gssamloops = 0;
-    if(level > 1)
+    if (level > 1)
     {
-        for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
-        {
-            iter->generateSubsequentStatesAfterMove(level - 1);
-            //gssamloops++;
-        }
+#pragma omp parallel for
+		for(short subStates = 0; subStates < subsequentStates.size(); subStates++)
+			subStateAt(subStates).generateSubsequentStatesAfterMove(level - 1);
+
+        //for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+        //{
+        //    iter->generateSubsequentStatesAfterMove (level - 1);
+        //    //gssamloops++;
+        //}
     }
     else
     {
-		this->generateSubsequentStates(color, 1);
+			this->generateSubsequentStates ( (Piece::colors)((color + 1) % 2), level);
+       /* for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
+        {
+		}*/
     }
     //qDebug() << "gssamloops" << gssamloops;
 }
@@ -125,9 +149,9 @@ unsigned short State::piecesCount()
     return board->piecesCount();
 }
 
-Piece State::pieceAt (unsigned short index)
+Piece* State::pieceAt (unsigned short index)
 {
-    return board->pieceAt(index);
+    return board->pieceAt (index);
 }
 
 bool State::hasAnySubsequentStates()
@@ -135,9 +159,12 @@ bool State::hasAnySubsequentStates()
     return subsequentStates.size() > 0;
 }
 
-void State::changeColor(){throw;}
-
-void State::setMoveXY(unsigned char x, unsigned char y)
+void State::changeColor()
 {
-	this->x = x, this->y = y;
+    throw;
+}
+
+void State::makeMove (unsigned char x, unsigned char y)
+{
+    this->x = x, this->y = y;
 }

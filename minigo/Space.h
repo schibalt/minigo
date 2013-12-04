@@ -14,10 +14,13 @@ class Space
 {
 public:
     Space();
+    Space (const Space &obj);
     virtual ~Space();
+    Space & operator= (const Space& that);
+
     bool isEmpty();
-    bool isSameColor(bool color);
-    void assignPiece(Piece* piece);
+    bool isSameColor (Piece::colors color);
+    void assignPiece (Piece* piece);
 
 private:
     bool emptyFlag;
