@@ -22,6 +22,12 @@ void MiniGo::passInitialState (unsigned char dimensions, unsigned char plies)
     qDebug() << "size of state is" << sizeof(State);
     qDebug() << "size of piece is" << sizeof(Piece);
     qDebug() << "size of space is" << sizeof(Space);
+    qDebug() << "size of char is" << sizeof(char);
+    qDebug() << "size of short is" << sizeof(short);
+    qDebug() << "size of int is" << sizeof(int);
+    qDebug() << "size of unsigned char is" << sizeof(unsigned char);
+    qDebug() << "size of unsigned short is" << sizeof(unsigned short);
+    qDebug() << "size of unsigned int is" << sizeof(unsigned int);
 
     this->plies = plies;
 
@@ -104,8 +110,9 @@ void MiniGo::on_moveButton_clicked()
         ui.statusBar->showMessage("Deleting obsolete states");
 		
         //uint64_t runstarttime = time::GetTimeMs64();
-
-        primaryState = primaryState->releaseSubStateAt (row);
+		
+        primaryState = &primaryState->subStateAt (row);
+        //primaryState = primaryState->releaseSubStateAt (row);
         activeState = primaryState;
 	
         /*uint64_t runendtime = time::GetTimeMs64();

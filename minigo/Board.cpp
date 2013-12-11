@@ -196,15 +196,17 @@ unsigned short Board::computeTerritory (Piece::colors color)
     bool *checkedCoordinates  = new bool[dimensions * dimensions];
     for (unsigned short checkedCoordinate = 0; checkedCoordinate < dimensions * dimensions; ++checkedCoordinate)
     {
-        char row = (checkedCoordinate / dimensions) * dimensions;
-        char column = checkedCoordinate % dimensions;
+        unsigned char row = (checkedCoordinate / dimensions) * dimensions,
+			column = checkedCoordinate % dimensions;
         unsigned short index = row + column;
         checkedCoordinates[index] = false;
     }
 
-    for (boost::ptr_vector<Piece>::iterator iter = pieces.begin(); iter != pieces.end(); ++iter)
+	//output the pieces for debug
+    /*for (boost::ptr_vector<Piece>::iterator iter = pieces.begin(); iter != pieces.end(); ++iter)
         qDebug() << Piece::getColorName (iter->getColor()) << "piece at" << iter->getX() << "," << iter->getY();
-    qDebug();
+    qDebug();*/
+
     //#pragma omp parallel for schedule(dynamic) reduction(+:territory)
     for (short y = 0; y < dimensions; ++y)
     {
@@ -262,7 +264,7 @@ bool Board::spaceIsHeldBy (Piece::colors color, unsigned char x, unsigned char y
         //for (directions direction = EAST; direction < 5; direction++)
         for (vector<directions>::iterator diterator = divections.begin(); diterator != divections.end(); ++diterator)
         {
-            short xoffset, yoffset;
+			short xoffset = INT_MIN, yoffset = INT_MIN;
 
             switch (*diterator)
             {

@@ -70,7 +70,7 @@ void State::generateSubsequentStates (Piece::colors color, unsigned char level)
                 }//if
             }//x
         }//y
-        short heuristic;
+		short heuristic = NULL;
 		if(hasAnySubsequentStates())
 			heuristic = subsequentStates.front().blackPoints;
         for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)
@@ -89,7 +89,7 @@ void State::generateSubsequentStates (Piece::colors color, unsigned char level)
 		blackPoints = heuristic;
     /*    qDebug() << subStatesGenerated << "subsequent states generated at level" << level;
 		qDebug() << "thread" << omp_get_thread_num() << "at level" << level;*/
-    }//if
+	}
     else //farthest ply ahead; compute heuristic
     {
         blackPoints = board->computeTerritory (Piece::BLACK);
@@ -120,7 +120,7 @@ void State::generateSubsequentStatesAfterMove (unsigned char level)
     if (level > 1)
     {
 #pragma omp parallel for
-		for(short subStates = 0; subStates < subsequentStates.size(); subStates++)
+		for(int subStates = 0; subStates < subsequentStates.size(); subStates++)
 			subStateAt(subStates).generateSubsequentStatesAfterMove(level - 1);
 
         //for (boost::ptr_vector<State>::iterator iter = subsequentStates.begin(); iter != subsequentStates.end(); ++iter)

@@ -13,7 +13,7 @@ time::~time (void)
 {
 }
 
-unsigned long time::GetTimeMs64()
+_int64 time::GetTimeMs64()
 {
 
 #ifdef WIN32

@@ -7,6 +7,7 @@
 #include <QtGui\QPainter>
 #include <QtGui\QPaintEvent>
 #include <QMessagebox>
+#include <climits>
 
 class MiniGo : public QMainWindow
 {

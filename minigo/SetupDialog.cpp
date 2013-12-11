@@ -18,7 +18,7 @@ void Dialog::on_okButton_clicked()
 	//min = ui.minMaxBox->currentIndex();
 	unsigned char plies = ui.plyBox->value();
 	
-	w.passInitialState (7, 2);
+	w.passInitialState (7, 3);
 	//w.passInitialState (dimensions, plies);
 	w.show();
 	//w.on_moveButton_clicked();

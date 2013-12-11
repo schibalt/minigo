@@ -4,6 +4,6 @@ class time
 public:
 	time(void);
 	~time(void);
-	 static unsigned long GetTimeMs64();
+	 static _int64 GetTimeMs64();
 };
 
